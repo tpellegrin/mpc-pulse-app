@@ -14,6 +14,10 @@ export const DEFAULTS = {
 export interface Props {
   /** Controls visibility; when true, content animates into view */
   in?: boolean;
+  /** When true, render immediately in final state with no animation (production-grade skip) */
+  disabled?: boolean;
+  /** Called once when the content first becomes visible (either via animation or instant) */
+  onReveal?: () => void;
   /** Delay in ms before animation starts */
   delayMs?: number;
   /** Duration in ms (will be clamped via getAccessibleDuration) */

@@ -1,6 +1,42 @@
 {
   "pulse": {
     "intro": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Marcelo nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "q2": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "q3": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "q4": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "q5": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "q6": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "q7": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "q8": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "q9": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "q10": {
       "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
       "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
     },

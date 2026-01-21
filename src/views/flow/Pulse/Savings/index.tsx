@@ -9,6 +9,12 @@ import { useFlowNav } from 'hooks/useFlowNav';
 import { useCalculator } from 'features/calculator/state';
 import { t } from 'i18n';
 import { FromBelowReveal } from 'components/Animations/FromBelowReveal';
+import pic1 from '../../../../assets/pictures/marcelo/pic_1.png';
+import pic2 from '../../../../assets/pictures/marcelo/pic_2.png';
+import pic3 from '../../../../assets/pictures/marcelo/pic_3.png';
+import pic4 from '../../../../assets/pictures/marcelo/pic_4.png';
+import pic5 from '../../../../assets/pictures/marcelo/pic_5.png';
+import FeelingImageMorphGL from '@components/FeelingImageMorphGL';
 
 export const Savings: React.FC = () => {
   const { goNext, goBack } = useFlowNav();
@@ -85,6 +91,21 @@ export const Savings: React.FC = () => {
           <Text color="tertiary" variant="captionMd">
             {t('calculator.poder_compra.savings.subHelper')}
           </Text>
+        </FromBelowReveal>
+
+        <FromBelowReveal delayMs={1500}>
+          <FeelingImageMorphGL
+            images={[pic1, pic2, pic3, pic4, pic5]}
+            height={400}
+            step={0.01}
+            intensity={0}
+            className="intro-morph"
+            snapOnRelease
+            showButtons
+            buttonsOnly
+            transitionDurationMs={450}
+            persistLastFrameKey="pulse-intro"
+          />
         </FromBelowReveal>
       </Flex>
 

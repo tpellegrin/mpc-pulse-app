@@ -9,17 +9,26 @@ import { FromBelowReveal } from 'components/Animations/FromBelowReveal';
 import { paths } from 'globals/paths';
 import { useFlowNav } from 'hooks/useFlowNav';
 import { t } from 'i18n';
+import { useTexture } from '@react-three/drei';
+import { useLocation } from 'react-router';
+import { useAnimationSeen } from 'globals/context/AnimationSeen';
 // import { EmojiSelectorGroup } from '@components/EmojiSelectorGroup';
 import FeelingImageMorphGL from '@components/FeelingImageMorphGL';
-import pic1 from 'assets/pictures/pic_1.png';
-import pic2 from 'assets/pictures/pic_2.png';
-import pic3 from 'assets/pictures/pic_3.png';
-import pic4 from 'assets/pictures/pic_4.png';
-import pic5 from 'assets/pictures/pic_5.png';
+import pic1 from 'assets/pictures/marcelo/pic_1.png';
+import pic2 from 'assets/pictures/marcelo/pic_2.png';
+import pic3 from 'assets/pictures/marcelo/pic_3.png';
+import pic4 from 'assets/pictures/marcelo/pic_4.png';
+import pic5 from 'assets/pictures/marcelo/pic_5.png';
+
+// Preload morph textures to avoid suspense flicker across transitions
+;(useTexture as any).preload?.([pic1, pic2, pic3, pic4, pic5]);
 
 export const Intro: React.FC = () => {
   const { goNext, goBack } = useFlowNav();
-  const [ready, setReady] = React.useState(false);
+  const { pathname } = useLocation();
+  // TODO: this removes some animations.
+  const { shouldAnimate, mark } = useAnimationSeen(`pulse:${pathname}`);
+  const [ready, setReady] = React.useState(!shouldAnimate);
   // const [selectedIdx, setSelectedIdx] = React.useState<number | null>(null);
 
   return (
@@ -51,21 +60,31 @@ export const Intro: React.FC = () => {
       fixedFooter
       stickyHeader
       contentFlexProps={{ justifyContent: 'space-between' }}
+      scrollLockForMs={shouldAnimate ? 4500 : 0}
     >
-      <CenterToTopEntrance delayMs={4000} onDone={() => setReady(true)}>
+      <CenterToTopEntrance
+        delayMs={4000}
+        onDone={() => {
+          setReady(true);
+          mark();
+        }}
+        skipHold={!shouldAnimate}
+      >
         <Text variant="accentMd">{t('pulse.intro.mainText')}</Text>
       </CenterToTopEntrance>
-      <FromBelowReveal in={ready}>
+      {/*TODO: probably remove "disabled here"*/}
+      <FromBelowReveal in={ready} disabled={!shouldAnimate}>
         <FeelingImageMorphGL
           images={[pic1, pic2, pic3, pic4, pic5]}
           height={400}
-          step={2}
+          step={0.01}
           intensity={0}
           className="intro-morph"
           snapOnRelease
           showButtons
           buttonsOnly
-          transitionDurationMs={600}
+          transitionDurationMs={450}
+          persistLastFrameKey="pulse-intro"
         />
       </FromBelowReveal>
       {/*<FromBelowReveal in={ready}>*/}

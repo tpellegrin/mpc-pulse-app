@@ -9,6 +9,8 @@ import { Props, RevealVars } from './types';
 export const FromBelowReveal: React.FC<Props> = ({
   children,
   in: isIn = true,
+  disabled = false,
+  onReveal,
   delayMs = TRANSITIONS.delay.none,
   durationMs = TRANSITIONS.duration.fast,
   yOffset = 16,
@@ -20,13 +22,12 @@ export const FromBelowReveal: React.FC<Props> = ({
   const reduced = prefersReducedMotion();
   const overlayRole = React.useContext(OverlayRoleContext); // 'active' | 'static' | 'exit'
   const isExit = overlayRole === 'exit';
-  const freeze = isExit;
 
   const [active, setActive] = React.useState<boolean>(false);
 
+  // Activate immediately when disabled or in exit overlay
   React.useLayoutEffect(() => {
-    // If we are rendering in the exit overlay, show immediately without waiting for RAF
-    if (isExit) {
+    if (disabled || isExit) {
       setActive(true);
       return;
     }
@@ -46,24 +47,39 @@ export const FromBelowReveal: React.FC<Props> = ({
     return () => {
       if (raf) window.cancelAnimationFrame(raf);
     };
-  }, [isIn, reduced, isExit]);
+  }, [isIn, reduced, isExit, disabled]);
 
-  // Force zero reveal delay on exit overlays (defensive; no transition is expected when already active)
-  const mergedStyle: React.CSSProperties & RevealVars = isExit
+  // Fire onReveal once, when first visible
+  const onRevealRef = React.useRef(onReveal);
+  React.useEffect(() => {
+    onRevealRef.current = onReveal;
+  }, [onReveal]);
+  const firedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (!firedRef.current && (disabled || (active && isIn))) {
+      firedRef.current = true;
+      onRevealRef.current?.();
+    }
+  }, [active, isIn, disabled]);
+
+  // Force zero reveal delay on exit overlays or when disabled
+  const mergedStyle: React.CSSProperties & RevealVars = disabled || isExit
     ? { ...(style ?? {}), ['--reveal-delay']: '0ms' }
     : (style as React.CSSProperties & RevealVars);
+
+  const freeze = isExit || disabled; // disable transitions and keep final state
 
   return (
     <_FromBelowRevealRoot
       as={as}
       className={className}
       style={mergedStyle}
-      $duration={durationMs}
-      $delay={delayMs}
+      $duration={disabled ? 0 : durationMs}
+      $delay={disabled ? 0 : delayMs}
       $offset={yOffset}
       $easing={easing}
       $reduced={reduced}
-      $active={active && isIn}
+      $active={(disabled || active) && isIn}
       $freeze={freeze}
       aria-hidden={!isIn}
       data-allow-motion
