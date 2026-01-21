@@ -6,6 +6,7 @@ import { AppRouter } from 'containers/AppRouter';
 import { base } from 'styles/themes/base';
 import { GlobalStyle } from 'styles/global';
 import { FontStyles } from 'styles/fonts';
+import { PagePaddingStyles } from 'styles/PagePadding';
 
 /**
  * Main App part that sets up the application providers
@@ -14,6 +15,7 @@ export const App = () => (
   <ThemeProvider theme={base}>
     <GlobalStyle />
     <FontStyles />
+    <PagePaddingStyles />
     <div className="app-root">
       <NavigationProvider>
         <ProgressBarProvider>
