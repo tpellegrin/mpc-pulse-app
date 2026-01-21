@@ -1,0 +1,162 @@
+{
+  "calculator": {
+    "poder_compra": {
+      "common": {
+        "next": "ꞨƝEXTꞨ",
+        "start": "ꞨSTARTꞨ",
+        "calculate": "ꞨCALCULATE MY CEILINGꞨ",
+        "currencyExample": "R$ 10.000",
+        "currencyExampleMonthly": "R$ 1.500",
+        "currencyExampleInstallment": "R$ 3.500",
+        "months": "{m} ɱѳnŧhs",
+        "years": "{y} ɏęåŕş",
+        "yearsAndMonths": "{y} ɏęåŕş ({m} ɱѳnŧhs)",
+        "perMonth": "/ɱѳnŧh"
+      },
+      "a11y": {
+        "savingsLabel": "Ħѳẅ mŭçħ ħåvę ɏǿŭ şåvęđ?",
+        "monthlySavingLabel": "Ħѳẅ mŭçħ çåŋ ɏǿŭ şåvę pęŕ ɱѳnŧħ?",
+        "maxInstallmentLabel": "Måxɨɱŭɱ mǿnŧħĺɏ ɨŋşŧåĺĺɱęŋŧ?",
+        "entryPctLabel": "Đǿẁŋ påɏɱęŋŧ pęŕçęŋŧåɠę?",
+        "monthsToSaveLabel": "Ħǿẅ ɱåŋɏ ɱѳnŧħş ŧǿ şåvę?",
+        "loanTermLabel": "Ŀǿåŋ ŧęŕɱ?",
+        "feesLabel": "Įŋçĺŭđę pŭŕçħåşę fęęş?"
+      },
+      "errors": {
+        "required": "Řęɋŭɨŕęđ fįęĺđ",
+        "nonNegative": "Ũşę å våĺŭę ≥ 0",
+        "min": "Mįŋ: {min}",
+        "max": "Måx: {max}",
+        "range": "βęŧŵęęŋ {min} åŋđ {max}"
+      },
+      "welcome": {
+        "title": "Đįşçǿvęŕ ŧħę pŕįçę ŧħåŧ fįŧş ɏǿŭŕ βŭđɠęŧ 🏡",
+        "text": "Ĩŋ å fęŵ şŧępş, ɏǿŭ'ĺĺ ŭŋđęŕşŧåŋđ ħǿŵ mŭçħ ɏǿŭ çåŋ įŋvęşŧ — şįɱpĺɏ, pŕåçŧįçåĺĺɏ åŋđ ŕęåĺįşŧįçåĺĺɏ.",
+        "cta": "Ĉǿɱɘçãŕ"
+      },
+      "income": {
+        "title": "Įŋçǿɱę",
+        "grossLabel": "Ǥŗǿşş ɱǿŋŧħĺɏ įŋçǿɱę",
+        "otherLabel": "Ǿŧħęŗ ɱǿŋŧħĺɏ įŋçǿɱę",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "savings": {
+        "title": "Ħǿẅ mŭçħ ħåvę ɏǿŭ şåvęđ?",
+        "helper": "Įŋçĺŭđę ąĺĺ ѕąvįŋɠѕ ƒǿŕ ěŋŧŕɏ.",
+        "subHelper": "Ęvęŗɏ đŕęåɱ şŧåŗŧş şǿɱęŵħęŕę.",
+        "placeholder": "R$ 10.000",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "expenses": {
+        "title": "Ĕxpęŋşęş",
+        "debtsLabel": "Mǿŋŧħĺɏ đęβŧ ƥåɏɱęŋŧş (ĺǿåŋş, çåŗđş)",
+        "livingLabel": "Mǿŋŧħĺɏ ĺįvįŋɠ ęxpęŋşęş",
+        "notesLabel": "Ńǿŧęş (ǿƥŧįǿŋåĺ)",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "monthlySaving": {
+        "title": "Ħǿẅ mŭçħ çåŋ ɏǿŭ şåvę pęŕ ɱѳnŧħ?",
+        "text": "Ĉǿŋşįşŧęŋçɏ βŭįĺđş ɠŕęåŧ ąçħįęvęɱęŋŧş.",
+        "placeholder": "R$ 1.500",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "maxInstallment": {
+        "title": "Måxɨɱŭɱ ɱǿnŧħĺɏ įŋşŧåĺĺɱęŋŧ?",
+        "text": "Ďǿŋ'ŧ ęxçęęđ 30% ǿƒ įŋçǿɱę.",
+        "helper": "Ċǿɱƒǿŗŧ ĺįɱįŧ.",
+        "placeholder": "R$ 3.500",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "credit": {
+        "title": "Ĉŗęđįŧ",
+        "back": "Ɓåçķ",
+        "scoreLabel": "Ĉŗęđįŧ şĉǿŗę (300–850)",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "entryPct": {
+        "title": "Ďǿŵŋ påɏɱęŋŧ pęŕçęŋŧåɠę",
+        "text": "Mįŋ 20% — ɱǿŕę ŗęđŭçęş ƒįŋåŋçįŋɠ.",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "monthsToSave": {
+        "title": "Ŧįɱę ŧǿ şåvę ƒǿŗ ěŋŧŕɏ",
+        "text": "Ĉħǿǿşę å ŧįɱęƒŕåɱę ŧħåŧ ƒįŧş ɏǿŭ.",
+        "example": "{y} ɏęåŕş ({m} ɱѳnŧħş)",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "loanTerm": {
+        "title": "Ŀǿåŋ ŧęŕɱ",
+        "text": "Måx 30 ɏęåŕş.",
+        "example": "{y} ɏęåŕş ({m} ɱѳnŧħş)",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "downPayment": {
+        "title": "Ďǿŵŋ ƥåɏɱęŋŧ",
+        "back": "Ɓåçķ",
+        "amountLabel": "Ďǿŵŋ ƥåɏɱęŋŧ åɱǿŭŋŧ",
+        "next": "ꞨƝEXTꞨ"
+      },
+      "feesPct": {
+        "title": "Įŋçĺŭđę pŭŕçħåşę fęęş?",
+        "text": "Åvēŕåɠę 5% ǿƒ pŕǿpęŗŧɏ.",
+        "options": {
+          "four": "4 %",
+          "five": "5 %",
+          "six": "6 %"
+        },
+        "calculate": "ꞨĈÅĻĈŪĿÅŦĘ ɱɏ çęįĺįŋɠ"
+      },
+      "rates": {
+        "title": "Äşşŭɱƥŧįǿŋş",
+        "back": "Ɓåçķ",
+        "aprLabel": "Įŋŧęŗęşŧ APR (%)",
+        "termLabel": "Ŀǿåŋ ŧęŕɱ (ɏęåŕş)",
+        "taxLabel": "Ƥŗǿƥęŗŧɏ ŧåx (åŋŋŭåĺ, % ǿƒ ƥŕįçę)",
+        "insLabel": "Ĭŋşŭŗåŋçę (åŋŋŭåĺ, % ǿƒ ƥŕįçę)",
+        "hoaLabel": "ĦǾÅ (ɱǿŋŧħĺɏ)",
+        "next": "Řęvįęŵ"
+      },
+      "result": {
+        "title": "Ɏǿŭŗ çŭŕŗęŋŧ çęįĺįŋɠ įş {P}",
+        "summary": {
+          "entry": "💰 Ďǿŵŋ påɏɱęŋŧ ({pct} %)",
+          "costs": "🧾 Ƒęęş ({pct} %)",
+          "financing": "🏦 Ƒįŋåŋçįŋɠ",
+          "payment": "💳 Ĕşŧįɱåŧęđ ɱǿŋŧħĺɏ påɏɱęŋŧ",
+          "time": "📆 Ŧįɱę ŧǿ şåvę",
+          "saved": "💵 Åĺŗęåđɏ şåvęđ"
+        },
+        "message": {
+          "line1": "🎉 Ĉǿŋɠŗåŧş! Ƥåɏɱęŋŧş βęĺǿŵ ĺįɱįŧ.",
+          "line2": "Ʋįåβĺę pĺåŋ — ŗǿǿɱ ŧǿ ɠŕǿŵ!",
+          "line3": "Ŧħŗęę ŵåɏş ŧǿ įŋçŗęåşę ƥŭŗçħåşę ƥǿŵęŗ:"
+        },
+        "suggestions": {
+          "alt1": {
+            "title": "Ęxŧęŋđ şåvįŋɠ ŧįɱę",
+            "desc": "+6 ɱǿnŧħş çåŋ ŗåįşę ĉęįĺįŋɠ ŧǿ {P_alt1}.",
+            "cta": "Ŝįɱŭĺåŧę ŵįŧħ ɱǿŗę ŧįɱę"
+          },
+          "alt2": {
+            "title": "Įŋçŗęåşę mǿŋŧħĺɏ şåvįŋɠ",
+            "desc": "+R$ 200/mǿ ŗęåçħ {P_alt2}.",
+            "cta": "Ŝįɱŭĺåŧę ŵįŧħ ĥįɠħęŗ åɱǿŭŋŧ"
+          },
+          "alt3": {
+            "title": "Ŀŭɱƥ şŭɱ įŋ ɱįđ-ĵǿŭŗŋęɏ",
+            "desc": "Å R$ 5.000 ĺŭɱƥ şŭɱ ŗåįşęş ŧǿ {P_alt3}.",
+            "cta": "Ŝįɱŭĺåŧę ŵįŧħ ĺŭɱƥ şŭɱ"
+          }
+        },
+        "reinforcement": {
+          "text": "Ŧįɱę, çǿŋşįşŧęŋçɏ åŋđ ɠǿǿđ đęçįşįǿŋş βŭįĺđ ŗęåĺ đŕęåɱş.\nĘåçħ çħǿįçę βŕįŋɠş ɏǿŭ ĉĺǿşęŗ."
+        },
+        "actions": {
+          "startJourney": "🧱 Ŭşę ŧħįş våĺŭę ŧǿ şŧåŕŧ",
+          "save": "💾 Ŝåvę şįɱŭĺåŧįǿŋ",
+          "redo": "🔁 Řęçåĺçŭĺåŧę"
+        }
+      }
+    }
+  }
+}

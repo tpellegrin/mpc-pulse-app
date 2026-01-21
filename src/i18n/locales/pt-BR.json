@@ -1,0 +1,198 @@
+{
+  "pulse": {
+    "intro": {
+      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
+      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+    },
+    "common": {
+      "next": "Próximo",
+      "start": "Começar"
+    }
+  },
+  "calculator": {
+    "poder_compra": {
+      "common": {
+        "next": "Próximo",
+        "start": "Começar",
+        "calculate": "Calcular meu teto",
+        "currencyExample": "R$ 10.000",
+        "currencyExampleMonthly": "R$ 1.500",
+        "currencyExampleInstallment": "R$ 3.500",
+        "months": "{m} meses",
+        "years": "{y} anos",
+        "yearsAndMonths": "{y} anos ({m} meses)",
+        "perMonth": "/mês"
+      },
+      "a11y": {
+        "savingsLabel": "Você já tem dinheiro guardado?",
+        "monthlySavingLabel": "Quanto você pode guardar por mês?",
+        "maxInstallmentLabel": "Qual valor maximo você pode pagar de parcela do financiamento?",
+        "entryPctLabel": "Quanto de entrada você deseja dar?",
+        "monthsToSaveLabel": "Em quanto tempo você deseja dar a entrada?",
+        "loanTermLabel": "Qual o tempo do financiamento?",
+        "feesLabel": "Deseja incluir as taxas da compra?"
+      },
+      "errors": {
+        "required": "Campo obrigatório",
+        "nonNegative": "Use um valor ≥ 0",
+        "min": "Mínimo: {min}",
+        "max": "Máximo: {max}",
+        "range": "Entre {min} e {max}"
+      },
+      "welcome": {
+        "title": "Poder de Compra",
+        "text": "Descubra o teto que cabe no seu bolso.",
+        "subtext": "Em poucos passos, você vai entender quanto pode investir no seu sonho da casa própria — de forma simples, prática e realista.",
+        "cta": "Começar"
+      },
+      "savings": {
+        "title": "Você já tem dinheiro guardado?",
+        "helper": "Esse é o seu ponto de partida — todo sonho começa de algum lugar. Se ainda nao comecou a guardar, nao tem problema. Pode avancar para a proxima pergunta.",
+        "subHelper": "Inclua tudo o que pode usar como entrada: poupança, FGTS ou investimentos.",
+        "placeholder": "R$ 10.000",
+        "next": "Próximo"
+      },
+      "monthlySaving": {
+        "title": "Quanto você pode guardar por mês?",
+        "helper": "Pense em um valor que caiba no seu bolso e que você consiga manter até a compra.\nA constância é o que constrói grandes conquistas.",
+        "placeholder": "R$ 10.000",
+        "next": "Próximo"
+      },
+      "maxInstallment": {
+        "title": "Qual valor maximo você pode pagar de parcela do financiamento?",
+        "helper": "O ideal é que as parcelas mensais não ultrapassem 30% da sua renda mensal. Escolha o valor máximo que caberia confortavelmente no seu orçamento.",
+        "subHelper": "Esse valor é o seu limite de conforto mensal.",
+        "placeholder": "R$ 3.500",
+        "next": "Próximo"
+      },
+      "entryPercentage": {
+        "title": "Quanto de entrada você deseja dar?",
+        "helper": "O mínimo exigido é 20% do valor do imóvel. Se quiser, pode aumentar para reduzir o valor a financiar.",
+        "next": "Próximo"
+      },
+      "savingPeriod": {
+        "title": "Por quanto tempo você deseja juntar antes de comprar uma casa?",
+        "helper": "Em quanto tempo você quer alcançar o valor total da sua entrada?\nEscolha o prazo que faz sentido para sua realidade.",
+        "yearsLabel": "Anos",
+        "next": "Próximo"
+      },
+      "loanTerm": {
+        "title": "Qual o tempo do financiamento?",
+        "helper": "O prazo máximo é de 35 anos. Escolha o tempo que você gostaria de financiar.",
+        "yearsLabel": "Anos",
+        "next": "Calcular"
+      },
+
+      "expenses": {
+        "title": "Despesas",
+        "debtsLabel": "Pagamentos mensais de dívidas (empréstimos, cartões)",
+        "livingLabel": "Despesas mensais de subsistência",
+        "notesLabel": "Notas (opcional)",
+        "next": "Próximo"
+      },
+      "credit": {
+        "title": "Crédito",
+        "back": "Voltar",
+        "scoreLabel": "Pontuação de crédito (300–850)",
+        "next": "Próximo"
+      },
+      "monthsToSave": {
+        "title": "Em quanto tempo você deseja dar a entrada?",
+        "text": "Em quanto tempo você quer alcançar o valor total da sua entrada? Escolha o prazo que faz sentido para sua realidade.",
+        "example": "{y} anos ({m} meses)",
+        "next": "Próximo"
+      },
+      "downPayment": {
+        "title": "Entrada",
+        "back": "Voltar",
+        "amountLabel": "Valor da entrada",
+        "next": "Próximo"
+      },
+      "feesPct": {
+        "title": "Deseja incluir as taxas da compra?",
+        "text": "Esses custos (ITBI, cartório e taxas bancárias) fazem parte da compra. A média é de 5 % do valor do imóvel.",
+        "options": {
+          "four": "4 %",
+          "five": "5 %",
+          "six": "6 %"
+        },
+        "calculate": "Calcular meu teto"
+      },
+      "rates": {
+        "title": "Premissas",
+        "back": "Voltar",
+        "aprLabel": "Juros (APR, %)",
+        "termLabel": "Prazo do financiamento (anos)",
+        "taxLabel": "Imposto (anual, % do preço)",
+        "insLabel": "Seguro (anual, % do preço)",
+        "hoaLabel": "Condomínio (mensal)",
+        "next": "Revisar"
+      },
+      "result": {
+        "title": "Seu teto atual é de",
+        "subtitle": "Valor máximo estimado do imóvel com base nas premissas abaixo.",
+        "summary": {
+          "main": "Veja como esse valor foi calculado, combinando sua entrada, financiamento e custos mensais.",
+          "entry": "💰 Entrada",
+          "downPayment": "Entrada estimada",
+          "costs": "🧾 Custos ({pct} %)",
+          "financing": "🏦 Financiamento",
+          "payment": "💳 Parcela estimada do financiamento",
+          "time": "📆 Tempo para juntar",
+          "saved": "💵 Valor já guardado",
+          "monthly": "Resumo mensal",
+          "principalInterest": "Financiamento (principal + juros)",
+          "tax": "Imposto",
+          "insurance": "Seguro",
+          "hoa": "Condomínio",
+          "total": "Total mensal (financiamento + custos)"
+        },
+        "message": {
+          "line1": "🎉 Parabéns! As parcelas estão abaixo do limite que você definiu.",
+          "line2": "Seu plano é viável — e ainda há espaço para crescer!",
+          "line3": "Veja três formas de aumentar seu poder de compra:"
+        },
+        "suggestions": {
+          "alt1": {
+            "title": "Aumente o prazo de poupança",
+            "desc": "Se você ampliar o tempo para juntar sua entrada em +6 meses, seu poder de compra pode subir para {P_alt1}.",
+            "cta": "Simular com mais tempo"
+          },
+          "alt2": {
+            "title": "Aumente sua poupança mensal",
+            "desc": "Se guardar +R$ 200 por mês, seu teto pode chegar a {P_alt2}.",
+            "cta": "Simular com valor maior por mês"
+          },
+          "alt3": {
+            "title": "Faça um aporte no meio da jornada",
+            "desc": "Se fizer um aporte de R$ 5.000 no meio do caminho, seu teto pode subir para {P_alt3}.",
+            "cta": "Simular com aporte"
+          }
+        },
+        "reinforcement": {
+          "text": "O tempo, a constância e as boas decisões constroem sonhos reais.\nCada escolha te aproxima mais da casa dos seus sonhos."
+        },
+        "advanced": {
+          "title": "Premissas avançadas",
+          "show": "Ajustar premissas",
+          "hide": "Ocultar premissas",
+          "interestAPR": "Juros do financiamento (ao ano)",
+          "loanTermYears": "Prazo do financiamento",
+          "years": "anos",
+          "propertyTaxAnnualPct": "Imposto sobre o imóvel (anual, % do preço)",
+          "insuranceAnnualPct": "Seguro residencial (anual, % do preço)",
+          "hoaMonthly": "Condomínio (mensal)",
+          "hoaValue": "Condomínio estimado: R$ {value}",
+          "minEntryPct": "Entrada mínima (% do valor do imóvel)",
+          "minDownLabel": "de entrada mínima"
+        },
+        "actions": {
+          "startJourney": "🧱 Usar este valor para começar sua jornada",
+          "save": "💾 Salvar simulação",
+          "redo": "Recomeçar",
+          "done": "Feito"
+        }
+      }
+    }
+  }
+}

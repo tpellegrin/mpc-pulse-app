@@ -1,0 +1,162 @@
+{
+  "calculator": {
+    "poder_compra": {
+      "common": {
+        "next": "Next",
+        "start": "Start",
+        "calculate": "Calculate my ceiling",
+        "currencyExample": "R$ 10,000",
+        "currencyExampleMonthly": "R$ 1,500",
+        "currencyExampleInstallment": "R$ 3,500",
+        "months": "{m} months",
+        "years": "{y} years",
+        "yearsAndMonths": "{y} years ({m} months)",
+        "perMonth": "/month"
+      },
+      "a11y": {
+        "savingsLabel": "How much have you saved?",
+        "monthlySavingLabel": "How much can you save per month?",
+        "maxInstallmentLabel": "Maximum monthly installment?",
+        "entryPctLabel": "Down payment percentage?",
+        "monthsToSaveLabel": "How many months to save?",
+        "loanTermLabel": "Loan term?",
+        "feesLabel": "Include purchase fees?"
+      },
+      "errors": {
+        "required": "Required field",
+        "nonNegative": "Use a value ≥ 0",
+        "min": "Min: {min}",
+        "max": "Max: {max}",
+        "range": "Between {min} and {max}"
+      },
+      "welcome": {
+        "title": "Discover the ceiling that fits your budget 🏡",
+        "text": "In a few steps, you will understand how much you can invest in your home dream — simply, practically and realistically.",
+        "cta": "Start"
+      },
+      "income": {
+        "title": "Income",
+        "grossLabel": "Gross monthly income",
+        "otherLabel": "Other monthly income",
+        "next": "Next"
+      },
+      "savings": {
+        "title": "How much have you saved?",
+        "helper": "Include everything you can use as down payment: savings, FGTS or investments.",
+        "subHelper": "Every dream starts somewhere — this is your starting point.",
+        "placeholder": "R$ 10,000",
+        "next": "Next"
+      },
+      "expenses": {
+        "title": "Expenses",
+        "debtsLabel": "Monthly debt payments (loans, cards)",
+        "livingLabel": "Monthly living expenses",
+        "notesLabel": "Notes (optional)",
+        "next": "Next"
+      },
+      "monthlySaving": {
+        "title": "How much can you save per month?",
+        "text": "Think of an amount that fits your budget and that you can maintain until purchase. Consistency builds great achievements.",
+        "placeholder": "R$ 1,500",
+        "next": "Next"
+      },
+      "maxInstallment": {
+        "title": "How much can you pay as a financing installment?",
+        "text": "Ideally, installments should not exceed 30% of your monthly income. Choose the maximum amount that would fit comfortably.",
+        "helper": "This amount is your monthly comfort limit.",
+        "placeholder": "R$ 3,500",
+        "next": "Next"
+      },
+      "credit": {
+        "title": "Credit",
+        "back": "Back",
+        "scoreLabel": "Credit score (300–850)",
+        "next": "Next"
+      },
+      "entryPct": {
+        "title": "How much down payment do you want to make?",
+        "text": "The minimum required is 20% of the property value. You can increase it to reduce financing.",
+        "next": "Next"
+      },
+      "monthsToSave": {
+        "title": "How long to save for the down payment?",
+        "text": "Choose a timeframe that makes sense for your reality.",
+        "example": "{y} years ({m} months)",
+        "next": "Next"
+      },
+      "loanTerm": {
+        "title": "Loan term",
+        "text": "Maximum of 30 years.",
+        "example": "{y} years ({m} months)",
+        "next": "Next"
+      },
+      "downPayment": {
+        "title": "Down payment",
+        "back": "Back",
+        "amountLabel": "Down payment amount",
+        "next": "Next"
+      },
+      "feesPct": {
+        "title": "Include purchase fees?",
+        "text": "These costs (ITBI, registry and bank fees) are part of the purchase. The average is 5% of the property value.",
+        "options": {
+          "four": "4 %",
+          "five": "5 %",
+          "six": "6 %"
+        },
+        "calculate": "Calculate my ceiling"
+      },
+      "rates": {
+        "title": "Assumptions",
+        "back": "Back",
+        "aprLabel": "Interest APR (%)",
+        "termLabel": "Loan term (years)",
+        "taxLabel": "Property tax (annual, % of price)",
+        "insLabel": "Insurance (annual, % of price)",
+        "hoaLabel": "HOA (monthly)",
+        "next": "Review"
+      },
+      "result": {
+        "title": "Your current ceiling is {P}",
+        "summary": {
+          "entry": "💰 Down payment ({pct} %)",
+          "costs": "🧾 Costs ({pct} %)",
+          "financing": "🏦 Financing",
+          "payment": "💳 Estimated monthly payment",
+          "time": "📆 Time to save",
+          "saved": "💵 Already saved"
+        },
+        "message": {
+          "line1": "🎉 Congratulations! The installments are below your limit.",
+          "line2": "Your plan is viable — and there is still room to grow!",
+          "line3": "See three ways to increase your purchasing power:"
+        },
+        "suggestions": {
+          "alt1": {
+            "title": "Extend saving time",
+            "desc": "If you extend by +6 months, your ceiling can rise to {P_alt1}.",
+            "cta": "Simulate with more time"
+          },
+          "alt2": {
+            "title": "Increase your monthly saving",
+            "desc": "If you save +R$ 200 per month, your ceiling can reach {P_alt2}.",
+            "cta": "Simulate with higher amount per month"
+          },
+          "alt3": {
+            "title": "Make a mid-journey lump sum",
+            "desc": "If you add a R$ 5,000 lump sum midway, your ceiling can rise to {P_alt3}.",
+            "cta": "Simulate with lump sum"
+          }
+        },
+        "reinforcement": {
+          "text": "Time, consistency and good decisions build real dreams.\nEach choice brings you closer to your dream home."
+        },
+        "actions": {
+          "startJourney": "🧱 Use this value to start your journey",
+          "save": "💾 Save simulation",
+          "redo": "🔁 Recalculate"
+        }
+      }
+    }
+  }
+}
