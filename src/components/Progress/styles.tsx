@@ -5,25 +5,27 @@ import { DURATION_MS } from 'containers/Layouts/common/LayoutTransitionContainer
 
 import type { Props } from './types';
 
-export const _ProgressValue = styled.div.attrs({ 'data-allow-width': true })<{
+export const _ProgressValue = styled.div.attrs({ 'data-allow-motion': true })<{
   $value: number;
 }>`
   height: 100%;
+  width: 100%;
   background-color: ${({ theme }) => theme.colors.action.accent};
-  will-change: width;
+  will-change: transform;
   backface-visibility: hidden;
+  transform-origin: left;
 
   /* Keep component-specific timing via CSS variables consumed by the global clamp */
   --transition-duration: ${getAccessibleDuration(DURATION_MS)}ms;
   --transition-easing: ease-in-out;
 
-  transition: width var(--transition-duration) var(--transition-easing);
+  transition: transform var(--transition-duration) var(--transition-easing);
 
   @media screen and (prefers-reduced-motion: reduce) {
     transition: none;
   }
 
-  width: ${({ $value }) => $value}%;
+  transform: scaleX(${({ $value }) => $value / 100});
 `;
 
 export const _ProgressRoot = styled.div<{
