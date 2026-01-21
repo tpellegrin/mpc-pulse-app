@@ -8,7 +8,7 @@ import { UserRoutes } from 'views/user';
 import { ErrorPage } from 'views/ErrorPage';
 import { CenterTransitionShell } from 'containers/Layouts/Shells/CenterTransitionShell';
 import { AnimatedOutlet } from 'components/AnimatedOutlet';
-import { CalculatorProviderOutlet } from '../views/flow/Pulse/state/ProviderOutlet';
+import { CalculatorProviderOutlet } from '../views/flow/pulse/state/ProviderOutlet';
 
 /**
  * Creates a router configuration for the given routes

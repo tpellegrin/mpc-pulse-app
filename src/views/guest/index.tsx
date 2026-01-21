@@ -5,12 +5,12 @@ import { paths } from 'globals/paths';
 
 import { SignIn } from './SignIn';
 import { Welcome } from './Welcome';
-import { Intro as CalcIntro } from '../flow/Pulse/Intro';
-import { Savings as CalcSavings } from '../flow/Pulse/Savings';
-import { MonthlySaving as CalcMonthlySaving } from '../flow/Pulse/MonthlySaving';
-import { MaxInstallment as CalcMaxInstallment } from '../flow/Pulse/MaxInstallments';
-import { SavingPeriod as CalcSavingPeriod } from '../flow/Pulse/SavingPeriod';
-import { Result as CalcResult } from '../flow/Pulse/Result';
+import { Intro as PulseIntro } from '../flow/pulse/Intro';
+import { Savings as PulseSavings } from '../flow/pulse/Savings';
+import { MonthlySaving as PulseMonthlySaving } from '../flow/pulse/MonthlySaving';
+import { MaxInstallment as PulseMaxInstallment } from '../flow/pulse/MaxInstallments';
+import { SavingPeriod as PulseSavingPeriod } from '../flow/pulse/SavingPeriod';
+import { Result as PulseResult } from '../flow/pulse/Result';
 
 export const GuestRoutes: RouteType[] = [
   {
@@ -25,29 +25,29 @@ export const GuestRoutes: RouteType[] = [
     path: paths.welcome,
     Component: Welcome,
   },
-  // Calculator flow (components only; provider is applied at router parent)
+  // Pulse flow
   {
-    path: paths.flow.calculator.intro,
-    Component: CalcIntro,
+    path: paths.flow.pulse.intro,
+    Component: PulseIntro,
   },
   {
-    path: paths.flow.calculator.savings,
-    Component: CalcSavings,
+    path: paths.flow.pulse.savings,
+    Component: PulseSavings,
   },
   {
-    path: paths.flow.calculator.monthlySaving,
-    Component: CalcMonthlySaving,
+    path: paths.flow.pulse.monthlySaving,
+    Component: PulseMonthlySaving,
   },
   {
-    path: paths.flow.calculator.maxInstallment,
-    Component: CalcMaxInstallment,
+    path: paths.flow.pulse.maxInstallment,
+    Component: PulseMaxInstallment,
   },
   {
-    path: paths.flow.calculator.savingPeriod,
-    Component: CalcSavingPeriod,
+    path: paths.flow.pulse.savingPeriod,
+    Component: PulseSavingPeriod,
   },
   {
-    path: paths.flow.calculator.result,
-    Component: CalcResult,
+    path: paths.flow.pulse.result,
+    Component: PulseResult,
   },
 ];

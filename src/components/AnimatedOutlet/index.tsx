@@ -19,6 +19,7 @@ import { useTransition } from 'hooks/useTransition';
 import { useScrollManagement } from 'hooks/useScrollManagement';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { Wrapper, Stage } from './styles';
+import { PulseExitAnimationReset } from 'globals/routeGuards/PulseExitAnimationReset';
 
 /**
  * AnimatedOutlet mounts route content with CSS transitions,
@@ -134,6 +135,7 @@ export const AnimatedOutlet = () => {
       className="routes-stage"
       data-route-transition={activeTransition ?? TransitionType.fade}
     >
+      <PulseExitAnimationReset />
       <TransitionGroup component={null}>
         <CSSTransition
           key={transitionKey}

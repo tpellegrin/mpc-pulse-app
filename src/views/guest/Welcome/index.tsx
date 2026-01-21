@@ -6,9 +6,11 @@ import { FromBelowReveal } from 'components/Animations/FromBelowReveal';
 import { Button } from 'components/Button';
 import { paths } from 'globals/paths';
 import { MainLayout } from 'containers/Layouts/MainLayout';
+import { useResetAnimations } from 'globals/context/AnimationSeen';
 
 export function Welcome() {
   const navigate = useNavigate();
+  const resetAnimations = useResetAnimations();
 
   // TODO: move texts to i18n
   return (
@@ -41,7 +43,10 @@ export function Welcome() {
               variant="tertiary"
               size="small"
               label="Iniciar"
-              onClick={() => navigate(paths.flow.calculator.intro)}
+              onClick={() => {
+                resetAnimations('pulse:');
+                void navigate(paths.flow.pulse.intro);
+              }}
             />
           </Flex>
         </FromBelowReveal>

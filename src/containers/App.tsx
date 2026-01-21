@@ -7,6 +7,7 @@ import { base } from 'styles/themes/base';
 import { GlobalStyle } from 'styles/global';
 import { FontStyles } from 'styles/fonts';
 import { PagePaddingStyles } from 'styles/PagePadding';
+import { AnimationSeenProvider } from 'globals/context/AnimationSeen';
 
 /**
  * Main App part that sets up the application providers
@@ -19,7 +20,9 @@ export const App = () => (
     <div className="app-root">
       <NavigationProvider>
         <ProgressBarProvider>
-          <AppRouter />
+          <AnimationSeenProvider>
+            <AppRouter />
+          </AnimationSeenProvider>
         </ProgressBarProvider>
       </NavigationProvider>
     </div>
