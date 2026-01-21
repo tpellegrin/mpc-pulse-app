@@ -1,4 +1,3 @@
-import React from 'react';
 import { useResetOnRouteExit } from './useResetOnRouteExit';
 
 const PULSE_ROUTE_PREFIX = '/flow/pulse';
