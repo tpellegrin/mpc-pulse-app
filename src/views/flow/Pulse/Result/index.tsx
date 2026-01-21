@@ -106,7 +106,7 @@ export const Result: React.FC = () => {
                   advanced: undefined,
                   derived: undefined,
                 }));
-                void goBack(paths.flow.calculator.intro);
+                void goBack(paths.flow.pulse.intro);
               }}
               aria-label={t('calculator.poder_compra.result.actions.redo')}
               label={t('calculator.poder_compra.result.actions.redo')}
