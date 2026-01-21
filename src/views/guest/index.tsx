@@ -5,12 +5,12 @@ import { paths } from 'globals/paths';
 
 import { SignIn } from './SignIn';
 import { Welcome } from './Welcome';
-import { Intro as PulseIntro } from '../flow/pulse/Intro';
-import { Savings as PulseSavings } from '../flow/pulse/Savings';
-import { MonthlySaving as PulseMonthlySaving } from '../flow/pulse/MonthlySaving';
-import { MaxInstallment as PulseMaxInstallment } from '../flow/pulse/MaxInstallments';
-import { SavingPeriod as PulseSavingPeriod } from '../flow/pulse/SavingPeriod';
-import { Result as PulseResult } from '../flow/pulse/Result';
+import { Intro as PulseIntro } from '../flow/Pulse/Intro';
+import { Savings as PulseSavings } from '../flow/Pulse/Savings';
+import { MonthlySaving as PulseMonthlySaving } from '../flow/Pulse/MonthlySaving';
+import { MaxInstallment as PulseMaxInstallment } from '../flow/Pulse/MaxInstallments';
+import { SavingPeriod as PulseSavingPeriod } from '../flow/Pulse/SavingPeriod';
+import { Result as PulseResult } from '../flow/Pulse/Result';
 
 export const GuestRoutes: RouteType[] = [
   {
