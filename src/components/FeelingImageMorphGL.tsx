@@ -5,12 +5,14 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useContext,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrthographicCamera, useTexture } from '@react-three/drei';
+import { OrthographicCamera, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { Flex } from '@components/Flex';
 import { Button } from '@components/Button';
+import { OverlayRoleContext } from 'components/CenterOnlyTransition/OverlayRoleContext';
 
 export interface FeelingImageMorphGLProps {
   images: string[];
@@ -28,18 +30,22 @@ export interface FeelingImageMorphGLProps {
   disableDamping?: boolean;
   displacementUrl?: string;
   intensity?: number;
+  bgColor?: string;
+
   // New optional navigation buttons API
   showButtons?: boolean;
   buttonsOnly?: boolean;
   buttonStep?: number;
   transitionDurationMs?: number;
   disableButtonsAtEnds?: boolean;
+
+  // Persist last rendered frame across remounts (used during route transitions)
+  persistLastFrameKey?: string;
 }
 
 const clamp = (v: number, min: number, max: number) =>
   Math.min(max, Math.max(min, v));
 
-// Easing used for snap-on-release animation
 const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
 
 // Generates a simple fractal-ish noise DataTexture as fallback displacement map
@@ -94,10 +100,8 @@ function makeNoiseTexture(size = 256): THREE.DataTexture {
       n2 /= norm;
 
       const i = (y * size + x) * 4;
-      const vr = Math.floor(n1 * 255);
-      const vg = Math.floor(n2 * 255);
-      data[i] = vr; // R
-      data[i + 1] = vg; // G
+      data[i] = Math.floor(n1 * 255); // R
+      data[i + 1] = Math.floor(n2 * 255); // G
       data[i + 2] = 128; // B (unused)
       data[i + 3] = 255; // A
     }
@@ -114,7 +118,9 @@ function makeNoiseTexture(size = 256): THREE.DataTexture {
   return texture;
 }
 
-// GLSL shaders implementing displacement-based morph with cover fit
+// IMPORTANT CHANGE:
+// - We no longer do cover/contain in the shader.
+// - We do "contain" by scaling the plane geometry in world units (letterbox via CSS bg).
 const vertexShader = `
   varying vec2 vUv;
   void main() {
@@ -131,51 +137,49 @@ const fragmentShader = `
   uniform sampler2D uDisp;
   uniform float uProgress;
   uniform float uIntensity;
-  uniform vec2 uResolution; // viewport in pixels
-  uniform vec2 uImageRes1;  // image 1 native size in pixels
-  uniform vec2 uImageRes2;  // image 2 native size in pixels
-
-  // object-fit: cover
-  vec2 coverUv(vec2 uv, vec2 res, vec2 img) {
-    float rs = res.x / res.y;
-    float is = img.x / img.y;
-    vec2 newSize = (is > rs) ? vec2(res.y * is, res.y) : vec2(res.x, res.x / is);
-    vec2 offset = (newSize - res) * 0.5;
-    vec2 uvPixels = uv * res + offset;
-    return uvPixels / newSize;
-  }
+  uniform vec2 uResolution; // drawing buffer size in pixels
 
   void main() {
     float p = smoothstep(0.0, 1.0, uProgress);
 
     // Sample 2D displacement from RG channels; lower frequency for smoother blobs
-    vec2 dispUv = vUv * 0.10; // smoother blobs, less grain
-    vec2 d = texture2D(uDisp, dispUv).rg * 2.0 - 1.0; // -1..1 in each axis
+    vec2 dispUv = vUv * 0.10;
+    vec2 d = texture2D(uDisp, dispUv).rg * 2.0 - 1.0; // -1..1
 
     // Scale warp by pixel size to make strength resolution-independent
-    vec2 px = 1.0 / uResolution; // size of one pixel in UV units
-    float strength = uIntensity * 180.0; // expected usable intensity: ~0.01–0.08
+    vec2 px = 1.0 / uResolution;
+    float strength = uIntensity * 180.0;
 
-    // Distort base UVs in opposite directions for the two textures
+    // Distort UVs in opposite directions for the two textures
     vec2 distortedUv1 = vUv + d * px * strength * (1.0 - p);
     vec2 distortedUv2 = vUv - d * px * strength * (p);
 
-    // Fit images with cover and clamp to avoid sampling outside
-    vec2 uv1 = coverUv(distortedUv1, uResolution, uImageRes1);
-    vec2 uv2 = coverUv(distortedUv2, uResolution, uImageRes2);
-    uv1 = clamp(uv1, 0.0, 1.0);
-    uv2 = clamp(uv2, 0.0, 1.0);
+    vec2 uv1 = clamp(distortedUv1, 0.0, 1.0);
+    vec2 uv2 = clamp(distortedUv2, 0.0, 1.0);
 
     vec4 tex1 = texture2D(uTexture1, uv1);
     vec4 tex2 = texture2D(uTexture2, uv2);
 
-    // DEBUG aid: uncomment next two lines to show first texture without morph.
-    // gl_FragColor = tex1;
-    // return;
-
     gl_FragColor = mix(tex1, tex2, p);
+    #include <tonemapping_fragment>
+    #include <colorspace_fragment>
   }
 `;
+
+function containSize(viewW: number, viewH: number, imgAspect: number) {
+  const viewAspect = viewW / viewH;
+  let w = viewW;
+  let h = viewH;
+
+  if (imgAspect > viewAspect) {
+    // image is wider than view: fit width
+    h = viewW / imgAspect;
+  } else {
+    // image is taller than view: fit height
+    w = viewH * imgAspect;
+  }
+  return { w, h };
+}
 
 type MorphSceneProps = {
   textures: THREE.Texture[];
@@ -205,12 +209,14 @@ function MorphScene({
     textures.forEach((t) => {
       if (!t) return;
       t.colorSpace = THREE.SRGBColorSpace; // photos are sRGB
+      t.wrapS = THREE.ClampToEdgeWrapping;
+      t.wrapT = THREE.ClampToEdgeWrapping;
       t.magFilter = THREE.LinearFilter;
-      // Keep mipmaps for images for better quality when scaled
       t.minFilter = THREE.LinearMipmapLinearFilter;
       t.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy?.() || 1);
       t.needsUpdate = true;
     });
+
     // Displacement is linear data, no mipmaps, repeat wrap to tile
     dispTex.wrapS = THREE.RepeatWrapping;
     dispTex.wrapT = THREE.RepeatWrapping;
@@ -221,7 +227,7 @@ function MorphScene({
     dispTex.needsUpdate = true;
   }, [textures, dispTex, gl]);
 
-  // Update texture pair and image resolutions when index changes
+  // Update texture pair when index changes
   useEffect(() => {
     const mat = materialRef.current;
     const tex1 = textures[indexI] || textures[0];
@@ -232,34 +238,32 @@ function MorphScene({
     mat.uniforms.uTexture2.value = tex2;
     mat.uniforms.uDisp.value = dispTex;
 
-    const img1 = (tex1.image as HTMLImageElement) || { width: 1, height: 1 };
-    const img2 = (tex2.image as HTMLImageElement) || { width: 1, height: 1 };
-    mat.uniforms.uImageRes1.value.set(img1.width || 1, img1.height || 1);
-    mat.uniforms.uImageRes2.value.set(img2.width || 1, img2.height || 1);
-
-    // IMPORTANT: prevent boundary twitch when pair changes by syncing progress
+    // prevent boundary twitch when pair changes by syncing progress
     progressRef.current = fTarget;
     mat.uniforms.uProgress.value = fTarget;
   }, [indexI, indexJ, textures, dispTex, fTarget]);
 
-  // Update resolution uniform when canvas resizes or dpr changes
+  // Update resolution uniform using actual drawing buffer size (more reliable on mobile)
   useEffect(() => {
     const mat = materialRef.current;
     if (!mat) return;
-    const dpr = gl.getPixelRatio();
-    mat.uniforms.uResolution.value.set(size.width * dpr, size.height * dpr);
+    const buf = new THREE.Vector2();
+    gl.getDrawingBufferSize(buf);
+    mat.uniforms.uResolution.value.set(buf.x, buf.y);
   }, [size, gl]);
 
   // Animate progress (damping)
   useFrame(() => {
     const mat = materialRef.current;
     if (!mat) return;
+
     if (disableDamping) {
       progressRef.current = fTarget;
     } else {
       const p = progressRef.current;
-      progressRef.current = p + (fTarget - p) * 0.12; // simple critically-damped-ish lerp
+      progressRef.current = p + (fTarget - p) * 0.12;
     }
+
     mat.uniforms.uProgress.value = clamp(progressRef.current, 0, 1);
     mat.uniforms.uIntensity.value = intensity;
   });
@@ -274,8 +278,6 @@ function MorphScene({
           uProgress: { value: 0 },
           uIntensity: { value: intensity },
           uResolution: { value: new THREE.Vector2(1, 1) },
-          uImageRes1: { value: new THREE.Vector2(1, 1) },
-          uImageRes2: { value: new THREE.Vector2(1, 1) },
         },
         vertexShader,
         fragmentShader,
@@ -284,11 +286,33 @@ function MorphScene({
     [],
   );
 
+  // Compute "contain" plane size (no stretching, no cropping)
+  const tex1 = textures[indexI] || textures[0];
+  const tex2 = textures[indexJ] || textures[textures.length - 1];
+
+  const a1 =
+    (tex1?.image as any)?.width && (tex1?.image as any)?.height
+      ? (tex1.image as any).width / (tex1.image as any).height
+      : 1;
+
+  const a2 =
+    (tex2?.image as any)?.width && (tex2?.image as any)?.height
+      ? (tex2.image as any).width / (tex2.image as any).height
+      : a1;
+
+  // Smooth aspect transition while morphing (prevents abrupt letterbox jumps)
+  const aspect = a1 + (a2 - a1) * clamp(fTarget, 0, 1);
+  const { w: planeW, h: planeH } = containSize(
+    viewport.width,
+    viewport.height,
+    aspect,
+  );
+
   return (
     <>
       <OrthographicCamera makeDefault position={[0, 0, 1]} />
-      {/* Unit plane scaled to viewport to fill the view */}
-      <mesh scale={[viewport.width, viewport.height, 1]}>
+      {/* Plane scaled to "contain" inside viewport; background comes from CSS */}
+      <mesh scale={[planeW, planeH, 1]}>
         <planeGeometry args={[1, 1, 1, 1]} />
         <primitive
           ref={materialRef as any}
@@ -301,7 +325,6 @@ function MorphScene({
   );
 }
 
-// Loads textures within the R3F Canvas context and renders the morph scene
 type GLContentProps = {
   images: string[];
   displacementUrl?: string;
@@ -343,6 +366,17 @@ function GLContent({
   );
 }
 
+function FirstFrame({ onFirstFrame }: { onFirstFrame: () => void }) {
+  const fired = useRef(false);
+  useFrame(() => {
+    if (!fired.current) {
+      fired.current = true;
+      onFirstFrame();
+    }
+  });
+  return null;
+}
+
 export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   images,
   labels,
@@ -359,14 +393,15 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   disableDamping = false,
   displacementUrl,
   intensity = 0.01,
+  bgColor = '#FAF8F4',
   // New buttons defaults
   showButtons = false,
   buttonsOnly = false,
   buttonStep = 1,
   transitionDurationMs = 350,
   disableButtonsAtEnds = true,
+  persistLastFrameKey,
 }) => {
-  // Validate props
   if (!images || images.length < 2) {
     return (
       <div
@@ -378,18 +413,57 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     );
   }
 
-  // Controlled/uncontrolled slider state
+  const overlayRole = useContext(OverlayRoleContext);
+  const isExit = overlayRole === 'exit';
+  const isEnter = overlayRole === 'active';
+
+  // Track when the Canvas has produced its first frame while entering.
+  const [firstFrameDrawn, setFirstFrameDrawn] = useState(false);
+
+  // Reset and set a safety timeout when we are in the entering overlay.
+  useEffect(() => {
+    if (!isEnter) return;
+    setFirstFrameDrawn(false);
+    const id = window.setTimeout(() => setFirstFrameDrawn(true), 1200);
+    return () => window.clearTimeout(id);
+  }, [isEnter]);
+
+  const showCover = isExit || (isEnter && !firstFrameDrawn);
+
+  const storageKey = persistLastFrameKey
+    ? `FeelingImageMorphGL:${persistLastFrameKey}`
+    : null;
+
+  const initialFromStorage = useMemo(() => {
+    if (!storageKey) return null;
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      if (!raw) return null;
+      const num = parseFloat(raw);
+      if (Number.isNaN(num)) return null;
+      return clamp(num, 0, images.length - 1);
+    } catch {
+      return null;
+    }
+  }, [storageKey, images.length]);
+
   const isControlled = typeof value === 'number';
   const [internalValue, setInternalValue] = useState<number>(
-    clamp(initialValue, 0, images.length - 1),
+    clamp(initialFromStorage ?? initialValue, 0, images.length - 1),
   );
   const t = clamp(isControlled ? value : internalValue, 0, images.length - 1);
 
-  // Local animation for button-driven transitions when controlled
   const [animatedT, setAnimatedT] = useState<number | null>(null);
-
-  // Displayed value (drives GL + slider)
   const viewT = isControlled ? (animatedT ?? t) : t;
+
+  // Persist the last value for reuse in exit overlay remounts
+  useEffect(() => {
+    if (!storageKey) return;
+    try {
+      const toStore = String(isControlled ? (animatedT ?? t) : t);
+      sessionStorage.setItem(storageKey, toStore);
+    } catch {}
+  }, [storageKey, isControlled, t, animatedT]);
 
   const i = clamp(Math.floor(viewT), 0, images.length - 1);
   const j = Math.min(i + 1, images.length - 1);
@@ -407,14 +481,12 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   const sliderMin = 0;
   const sliderMax = Math.max(1, images.length - 1);
 
-  // Label for current integer index (based on displayed value)
   const currentIndexForLabel = clamp(Math.round(viewT), 0, images.length - 1);
   const labelText =
     labels && labels[currentIndexForLabel]
       ? `${labels[currentIndexForLabel]}`
       : `${currentIndexForLabel + 1} / ${images.length}`;
 
-  // Simple styles
   const wrapperStyle: React.CSSProperties = {
     width,
     height,
@@ -428,7 +500,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     height: '100%',
     overflow: 'hidden',
     borderRadius: 12,
-    background: '#FAF8F4',
+    background: bgColor, // letterbox/pillarbox color
   };
   const sliderWrap: React.CSSProperties = {
     display: 'flex',
@@ -446,17 +518,24 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     fontSize: 12,
     borderRadius: 8,
     pointerEvents: 'none',
+    zIndex: 3,
   };
 
-  // Slider events and snapping
   const [isInteracting, setIsInteracting] = useState(false);
 
-  // snap animation refs (slider snap-on-release)
+  // Preload textures in advance to avoid Suspense flicker on remounts (e.g., during transitions)
+  useEffect(() => {
+    try {
+      (useTexture as any).preload?.(images);
+      if (displacementUrl) (useTexture as any).preload?.(displacementUrl);
+    } catch {}
+  }, [images, displacementUrl]);
+
   const snapRaf = useRef<number | null>(null);
   const snapStart = useRef<number>(0);
   const snapFrom = useRef<number>(0);
   const snapTo = useRef<number>(0);
-  const snapDuration = useRef<number>(200); // ms
+  const snapDuration = useRef<number>(200);
 
   const cancelSnap = useCallback(() => {
     if (snapRaf.current != null) {
@@ -465,7 +544,6 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     }
   }, []);
 
-  // button-driven animation refs
   const btnRaf = useRef<number | null>(null);
   const btnStart = useRef<number>(0);
   const btnFrom = useRef<number>(0);
@@ -486,12 +564,8 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     [cancelSnap, cancelButtonAnim],
   );
 
-  // If parent updates controlled value during a local animation, follow parent
   useEffect(() => {
-    if (isControlled) {
-      // Hand control back to parent on any external value change
-      setAnimatedT(null);
-    }
+    if (isControlled) setAnimatedT(null);
   }, [isControlled, value]);
 
   const startSnap = useCallback(
@@ -509,12 +583,10 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
       );
 
       if (isControlled) {
-        // In controlled mode, prefer calling once with the final value
-        if (onChange) onChange(nearest);
+        onChange?.(nearest);
         return;
       }
 
-      // Already at integer
       if (Math.abs(current - nearest) < 1e-6) {
         setInternalValue(nearest);
         onChange?.(nearest);
@@ -549,23 +621,18 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     [cancelSnap, images.length, internalValue, isControlled, onChange, value],
   );
 
-  // Button-driven animation to a target integer index
   const animateToIndex = useCallback(
     (targetIndex: number) => {
       cancelButtonAnim();
       cancelSnap();
       const last = images.length - 1;
       const clampedTarget = clamp(Math.round(targetIndex), 0, last);
-      // Determine current starting point from what user sees now
       const currentView = isControlled ? (animatedT ?? value) : internalValue;
-
       if (!isFinite(currentView)) return;
 
-      // If already at target, nothing to do
       if (Math.abs(currentView - clampedTarget) < 1e-6) {
-        if (isControlled) {
-          onChange?.(clampedTarget);
-        } else {
+        if (isControlled) onChange?.(clampedTarget);
+        else {
           setInternalValue(clampedTarget);
           onChange?.(clampedTarget);
         }
@@ -582,11 +649,10 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
         const eased = easeOutCubic(tNorm);
         const nextVal =
           btnFrom.current + (btnToIndex.current - btnFrom.current) * eased;
-        if (isControlled) {
-          setAnimatedT(nextVal);
-        } else {
-          setInternalValue(nextVal);
-        }
+
+        if (isControlled) setAnimatedT(nextVal);
+        else setInternalValue(nextVal);
+
         if (tNorm < 1) {
           btnRaf.current = requestAnimationFrame(tick);
         } else {
@@ -619,7 +685,6 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = parseFloat(e.target.value);
     cancelButtonAnim();
-    // Deprecated snapToSteps: rounds while dragging only
     const next = snapToSteps && isInteracting ? Math.round(raw) : raw;
     handleChange(next);
   };
@@ -632,16 +697,12 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
 
   const onPointerUp = () => {
     setIsInteracting(false);
-    if (snapOnRelease) {
-      startSnap();
-    }
+    if (snapOnRelease) startSnap();
   };
 
   const onPointerCancel = () => {
     setIsInteracting(false);
-    if (snapOnRelease) {
-      startSnap();
-    }
+    if (snapOnRelease) startSnap();
   };
 
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -654,16 +715,62 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
       'PageUp',
       'PageDown',
     ];
-    if (keys.includes(e.key)) {
-      startSnap();
-    }
+    if (keys.includes(e.key)) startSnap();
   };
 
   return (
     <div style={wrapperStyle} className={className}>
       <div style={viewportStyle}>
-        <Canvas dpr={[1, 2]} gl={{ antialias: true }}>
-          <Suspense fallback={null}>
+        {showCover && (
+          <img
+            src={images[currentIndexForLabel]}
+            alt=""
+            aria-hidden
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              objectPosition: 'center',
+              borderRadius: 12,
+              pointerEvents: 'none',
+              zIndex: 2,
+            }}
+          />
+        )}
+        <Canvas
+          dpr={[1]}
+          gl={{ antialias: true, powerPreference: 'high-performance' }}
+          onCreated={({ gl }) => {
+            gl.outputColorSpace = THREE.SRGBColorSpace;
+            gl.toneMapping = THREE.NoToneMapping;
+          }}
+        >
+          <Suspense
+            fallback={
+              <Html fullscreen>
+                <img
+                  src={images[currentIndexForLabel]}
+                  alt=""
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    objectPosition: 'center',
+                    borderRadius: 12,
+                    pointerEvents: 'none',
+                  }}
+                />
+              </Html>
+            }
+          >
+            {/* Hide the entering DOM cover once the Canvas has rendered a frame */}
+            {isEnter && (
+              <FirstFrame onFirstFrame={() => setFirstFrameDrawn(true)} />
+            )}
             <GLContent
               images={images}
               displacementUrl={displacementUrl}
@@ -679,6 +786,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
           {labelText}
         </div>
       </div>
+
       {(showSlider !== false && !buttonsOnly) || showButtons ? (
         <Flex
           direction="row"
@@ -700,6 +808,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
               disabled={disableButtonsAtEnds && currentIndexForLabel <= 0}
             />
           )}
+
           {showSlider !== false && !buttonsOnly && (
             <input
               aria-label="Image morph slider"
@@ -716,6 +825,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
               style={{ width: '100%' }}
             />
           )}
+
           {showButtons && (
             <Button
               aria-label="Next"
@@ -740,27 +850,3 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
 };
 
 export default FeelingImageMorphGL;
-
-/*
-Usage example:
-
-import { FeelingImageMorphGL } from 'components/FeelingImageMorphGL';
-
-export function Demo() {
-  return (
-    <div style={{ width: '100%', maxWidth: 720, margin: '0 auto' }}>
-      <FeelingImageMorphGL
-        images={[
-          'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?q=80&w=1600&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1600&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1495567720989-cebdbdd97913?q=80&w=1600&auto=format&fit=crop',
-        ]}
-        labels={["One", "Two", "Three"]}
-        height={400}
-        step={0.01}
-        intensity={0.4}
-      />
-    </div>
-  );
-}
-*/
