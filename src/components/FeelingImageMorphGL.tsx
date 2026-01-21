@@ -740,7 +740,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
           />
         )}
         <Canvas
-          dpr={[1]}
+          dpr={1}
           gl={{ antialias: true, powerPreference: 'high-performance' }}
           onCreated={({ gl }) => {
             gl.outputColorSpace = THREE.SRGBColorSpace;
