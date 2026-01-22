@@ -7,6 +7,7 @@ import { Button } from 'components/Button';
 import { paths } from 'globals/paths';
 import { MainLayout } from 'containers/Layouts/MainLayout';
 import { useResetAnimations } from 'globals/context/AnimationSeen';
+import BackgroundBlobs from 'components/BackgroundBlobs';
 
 export function Welcome() {
   const navigate = useNavigate();
@@ -15,6 +16,14 @@ export function Welcome() {
   // TODO: move texts to i18n
   return (
     <MainLayout contentInnerClassName="page-padding">
+      <BackgroundBlobs
+        density={4}
+        minRadius={70}
+        maxRadius={160}
+        speed={0.1}
+        colorMode="pastel"
+        wobble
+      />
       <Flex
         direction="column"
         justifyContent="center"
