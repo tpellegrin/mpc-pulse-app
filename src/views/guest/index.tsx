@@ -6,7 +6,7 @@ import { paths } from 'globals/paths';
 import { SignIn } from './SignIn';
 import { Welcome } from './Welcome';
 import { Intro as PulseIntro } from '../flow/Pulse/Intro';
-import { Savings as PulseSavings } from '../flow/pulse/Q2';
+import { Q2 as PulseQ2 } from '../flow/pulse/Q2';
 import { MonthlySaving as PulseMonthlySaving } from '../flow/Pulse/MonthlySaving';
 import { MaxInstallment as PulseMaxInstallment } from '../flow/Pulse/MaxInstallments';
 import { SavingPeriod as PulseSavingPeriod } from '../flow/Pulse/SavingPeriod';
@@ -32,7 +32,7 @@ export const GuestRoutes: RouteType[] = [
   },
   {
     path: paths.flow.pulse.savings,
-    Component: PulseSavings,
+    Component: PulseQ2,
   },
   {
     path: paths.flow.pulse.monthlySaving,

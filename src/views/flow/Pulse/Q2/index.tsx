@@ -16,7 +16,7 @@ import pic4 from 'assets/pictures/marcia/pic_4.png';
 import pic5 from 'assets/pictures/marcia/pic_5.png';
 import FeelingImageMorphGL from '@components/FeelingImageMorphGL';
 
-export const Savings: React.FC = () => {
+export const Q2: React.FC = () => {
   const { goNext, goBack } = useFlowNav();
   const { state, setState } = useCalculator();
 
