@@ -38,6 +38,7 @@ export const Range: React.FC<Props> = ({
   className,
   'aria-describedby': ariaDescribedBy,
   'aria-labelledby': ariaLabelledBy,
+  hideFootnote = false,
   ...restInputProps
 }) => {
   const safeMin = Number.isFinite(min) ? Number(min) : 0;
@@ -162,7 +163,7 @@ export const Range: React.FC<Props> = ({
           aria-valuemax={mMax}
           aria-valuenow={value}
           aria-valuetext={getFormattedValue(value)}
-          aria-describedby={ariaDescribedBy ?? footnoteId}
+          aria-describedby={ariaDescribedBy ?? (hideFootnote ? undefined : footnoteId)}
           aria-labelledby={ariaLabelledBy}
           aria-orientation="horizontal"
           aria-readonly={readOnly || undefined}
@@ -192,14 +193,16 @@ export const Range: React.FC<Props> = ({
         )}
       </Control>
 
-      <_RangeMinMaxFootnote id={footnoteId}>
-        <Text color="tertiary" variant={textVariant}>
-          {getLabel(mMin, minLabel)}
-        </Text>
-        <Text color="tertiary" variant={textVariant}>
-          {getLabel(mMax, maxLabel)}
-        </Text>
-      </_RangeMinMaxFootnote>
+      {!hideFootnote && (
+        <_RangeMinMaxFootnote id={footnoteId}>
+          <Text color="tertiary" variant={textVariant}>
+            {getLabel(mMin, minLabel)}
+          </Text>
+          <Text color="tertiary" variant={textVariant}>
+            {getLabel(mMax, maxLabel)}
+          </Text>
+        </_RangeMinMaxFootnote>
+      )}
     </div>
   );
 };

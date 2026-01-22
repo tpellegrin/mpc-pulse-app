@@ -35,6 +35,7 @@ export type Props = Omit<
   endAdornment?: ReactNode;
   onValueChange?: (value: number) => void;
   onValueCommit?: (value: number) => void;
+  hideFootnote?: boolean;
 };
 
 export type LogicProps = Required<
