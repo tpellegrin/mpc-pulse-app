@@ -2,11 +2,6 @@ import { styled, css } from 'styled-components';
 
 import { Flex } from 'components/Flex';
 import { from } from 'styles/media';
-import {
-  hideScrollbarForce,
-  prettyScrollbar,
-  scrollerContainer,
-} from 'styles/mixins';
 
 export const ContentColumn = styled(Flex)<{
   $paddingInline?: string;
@@ -26,25 +21,10 @@ export const ContentColumn = styled(Flex)<{
   `}
 `;
 
-export const ScrollViewport = styled.div<{ $scroll?: boolean }>`
+export const ScrollViewport = styled.div`
   display: flex;
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
   justify-content: center;
-
-  ${({ $scroll }) =>
-    $scroll &&
-    css`
-      ${scrollerContainer()};
-      ${prettyScrollbar()};
-      // TODO: Remove forced scrollbar suppression once scroll architecture is unified.
-      // This hideScrollbarForce() workaround prevents layout shifts caused by multiple
-      // competing scroll containers.
-      ${hideScrollbarForce()};
-
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      scrollbar-gutter: stable;
-    `}
 `;

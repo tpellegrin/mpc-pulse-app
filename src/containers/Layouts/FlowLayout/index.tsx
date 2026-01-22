@@ -11,6 +11,7 @@ import { LayoutChromeContext } from '../common/LayoutChromeContext';
 
 import { Props } from './types';
 import { ContentColumn, ScrollViewport } from './styles';
+import { useNavigation } from 'globals/context/NavigationContext';
 
 /**
  * FlowLayout
@@ -79,6 +80,23 @@ export const FlowLayout: React.FC<Props> = ({
     return () => window.clearTimeout(id);
   }, [scrollLockForMs]);
 
+  // Apply scroll lock to the unified app scroller (BaseLayout content)
+  const { scrollRef } = useNavigation();
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    if (scrollLocked) {
+      const prev = el.style.overflowY;
+      el.style.overflowY = 'hidden';
+      return () => {
+        el.style.overflowY = prev;
+      };
+    }
+    // Clear inline override to fall back to CSS-defined scrolling
+    el.style.overflowY = '';
+    return;
+  }, [scrollLocked, scrollRef]);
+
   useEffect(() => {
     if (!canPublish) return;
     if (resolvedHeader) {
@@ -144,7 +162,7 @@ export const FlowLayout: React.FC<Props> = ({
     >
       <LayoutTransitionInner>
         {banner}
-        <ScrollViewport $scroll={!scrollLocked}>
+        <ScrollViewport>
           <ContentColumn
             ref={contentRef}
             $paddingInline={paddingInline}

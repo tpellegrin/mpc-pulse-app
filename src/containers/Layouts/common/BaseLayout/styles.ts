@@ -97,4 +97,9 @@ export const _BaseLayoutContent = styled.div<{
 
   box-sizing: border-box;
   width: 100%;
+  /* Be the ONE vertical scroller */
+  overflow-y: auto;
+  overscroll-behavior: contain; /* prevent scroll chaining to shell */
+  scrollbar-gutter: stable; /* no layout shift when scrollbar appears */
+  -webkit-overflow-scrolling: touch; /* momentum scroll on iOS */
 `;
