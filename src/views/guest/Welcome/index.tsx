@@ -19,9 +19,9 @@ export function Welcome() {
       <BackgroundBlobs
         density={4}
         minRadius={70}
-        maxRadius={160}
-        speed={0.1}
-        colorMode="pastel"
+        maxRadius={200}
+        speed={0.025}
+        colorMode="vivid"
         wobble
       />
       <Flex
