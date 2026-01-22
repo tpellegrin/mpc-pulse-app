@@ -32,8 +32,5 @@
     {
       "path": "./tsconfig.node.json"
     }
-  ],
-  "exclude": [
-    "src/views/flow/pulse/**"
   ]
 }
