@@ -2,43 +2,39 @@
   "pulse": {
     "intro": {
       "mainText": "Como você avalia seu nível geral de ânimo na escala Marcelo nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+      "subtext": "Considere como seu coração tem estado enquanto você serve na missão."
     },
     "q2": {
-      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+      "mainText": "E como você tem lidado emocionalmente com as pressões da rotina missionária?",
+      "subtext": "Reflita sobre como seu coração tem reagido às exigências deste tempo, e selecione a Márcia que melhor representa você."
     },
     "q3": {
-      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+      "mainText": "O quanto você sente que está apenas “no automático” na rotina atual?",
+      "subtext": " Reflita se você tem vivido os dias com presença ou apenas cumprindo tarefas."
     },
     "q4": {
-      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+      "mainText": "Mesmo com dificuldades, o quanto você tem conseguido agradecer pelas coisas do dia a dia?",
+      "subtext": "Reflita sobre sua capacidade de reconhecer motivos de gratidão."
     },
     "q5": {
-      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+      "mainText": "Como está sua disposição para participar das atividades diárias do ministério?",
+      "subtext": "Pense na sua energia e vontade de se envolver nas tarefas do dia a dia."
     },
     "q6": {
-      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+      "mainText": "O quanto você sente que está usando seus dons e talentos no que faz hoje?",
+      "subtext": "Pense se os dons que Deus lhe deu encontram espaço na sua atuação atual."
     },
     "q7": {
-      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+      "mainText": "Como você avalia sua satisfação com o que consegue entregar hoje, dentro dos seus limites?",
+      "subtext": "Pense se o que você tem feito hoje tem gerado um senso de realização e fruto."
     },
     "q8": {
-      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+      "mainText": "O quanto você sente vontade de continuar neste caminho hoje?",
+      "subtext": "Considere seu desejo de permanecer onde está neste tempo."
     },
     "q9": {
-      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
-    },
-    "q10": {
-      "mainText": "Como você avalia seu nível geral de ânimo na escala Mongrau nos últimos dias?",
-      "subtext": "Em poucos passos, você irá entender melhor como seu anda seu emocional."
+      "mainText": "O quanto você percebe apoio e cuidado por parte da liderança da organização?",
+      "subtext": "Avalie como tem sido sua experiência de apoio por parte da liderança."
     },
     "common": {
       "next": "Próximo",
