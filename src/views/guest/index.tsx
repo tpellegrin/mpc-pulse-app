@@ -6,7 +6,7 @@ import { paths } from 'globals/paths';
 import { SignIn } from './SignIn';
 import { Welcome } from './Welcome';
 import { Intro as PulseIntro } from '../flow/Pulse/Intro';
-import { Savings as PulseSavings } from '../flow/Pulse/Savings';
+import { Savings as PulseSavings } from '../flow/pulse/Q2';
 import { MonthlySaving as PulseMonthlySaving } from '../flow/Pulse/MonthlySaving';
 import { MaxInstallment as PulseMaxInstallment } from '../flow/Pulse/MaxInstallments';
 import { SavingPeriod as PulseSavingPeriod } from '../flow/Pulse/SavingPeriod';
