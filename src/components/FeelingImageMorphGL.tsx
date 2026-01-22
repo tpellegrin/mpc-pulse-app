@@ -161,7 +161,9 @@ const fragmentShader = `
     vec4 tex1 = texture2D(uTexture1, uv1);
     vec4 tex2 = texture2D(uTexture2, uv2);
 
-    gl_FragColor = mix(tex1, tex2, p);
+    vec4 col = mix(tex1, tex2, p);
+    if (col.a < 0.004) discard; // prevent white edge fringe
+    gl_FragColor = col;
     #include <tonemapping_fragment>
     #include <colorspace_fragment>
   }
@@ -282,7 +284,7 @@ function MorphScene({
         },
         vertexShader,
         fragmentShader,
-        transparent: false,
+        transparent: true,
       }),
     [],
   );
@@ -719,10 +721,11 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
         )}
         <Canvas
           dpr={1}
-          gl={{ antialias: true, powerPreference: 'high-performance' }}
+          gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
           onCreated={({ gl }) => {
             gl.outputColorSpace = THREE.SRGBColorSpace;
             gl.toneMapping = THREE.NoToneMapping;
+            gl.setClearColor(0x000000, 0);
           }}
         >
           <Suspense
