@@ -76,13 +76,11 @@ export const Intro: React.FC = () => {
       <FromBelowReveal in={ready} disabled={!shouldAnimate}>
         <FeelingImageMorphGL
           images={[pic1, pic2, pic3, pic4, pic5]}
-          height={400}
+          height="clamp(220px, 42vh, 360px)"
           step={0.01}
           intensity={0}
           className="intro-morph"
           snapOnRelease
-          showButtons
-          buttonsOnly
           transitionDurationMs={450}
           persistLastFrameKey="pulse-intro"
         />
