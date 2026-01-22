@@ -380,7 +380,7 @@ function FirstFrame({ onFirstFrame }: { onFirstFrame: () => void }) {
 
 export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   images,
-  labels,
+  // labels,
   width = '100%',
   height = 360,
   className,
@@ -483,10 +483,10 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   const sliderMax = Math.max(1, images.length - 1);
 
   const currentIndexForLabel = clamp(Math.round(viewT), 0, images.length - 1);
-  const labelText =
-    labels && labels[currentIndexForLabel]
-      ? `${labels[currentIndexForLabel]}`
-      : `${currentIndexForLabel + 1} / ${images.length}`;
+  // const labelText =
+  //   labels && labels[currentIndexForLabel]
+  //     ? `${labels[currentIndexForLabel]}`
+  //     : `${currentIndexForLabel + 1} / ${images.length}`;
 
   const wrapperStyle: React.CSSProperties = {
     width,
@@ -509,18 +509,18 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     gap: 12,
     padding: '8px 0 0 0',
   };
-  const labelBadge: React.CSSProperties = {
-    position: 'absolute',
-    left: 12,
-    bottom: 12,
-    padding: '4px 8px',
-    background: 'rgba(0,0,0,0.5)',
-    color: '#fff',
-    fontSize: 12,
-    borderRadius: 8,
-    pointerEvents: 'none',
-    zIndex: 3,
-  };
+  // const labelBadge: React.CSSProperties = {
+  //   position: 'absolute',
+  //   left: 12,
+  //   bottom: 12,
+  //   padding: '4px 8px',
+  //   background: 'rgba(0,0,0,0.5)',
+  //   color: '#fff',
+  //   fontSize: 12,
+  //   borderRadius: 8,
+  //   pointerEvents: 'none',
+  //   zIndex: 3,
+  // };
 
   const [isInteracting, setIsInteracting] = useState(false);
 
