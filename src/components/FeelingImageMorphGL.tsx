@@ -683,7 +683,6 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     ],
   );
 
-
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!snapOnRelease) return;
     const keys = [
@@ -698,7 +697,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   };
 
   return (
-    <div style={wrapperStyle} className={className}>
+    <Flex gap="xl" style={wrapperStyle} className={className}>
       <div style={viewportStyle}>
         {showCover && (
           <img
@@ -761,12 +760,12 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
             />
           </Suspense>
         </Canvas>
-        <div style={labelBadge} aria-hidden="true">
-          {labelText}
-        </div>
+        {/*<div style={labelBadge} aria-hidden="true">*/}
+        {/*  {labelText}*/}
+        {/*</div>*/}
       </div>
 
-      {(showSlider !== false && !buttonsOnly) || showButtons ? (
+      {(showSlider && !buttonsOnly) || showButtons ? (
         <Flex
           direction="row"
           alignItems="flex-end"
@@ -788,7 +787,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
             />
           )}
 
-          {showSlider !== false && !buttonsOnly && (
+          {showSlider && !buttonsOnly && (
             <Range
               aria-label="Image morph slider"
               min={sliderMin}
@@ -799,7 +798,8 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
                 // Treat as interacting during value change
                 if (!isInteracting) setIsInteracting(true);
                 cancelButtonAnim();
-                const next = snapToSteps && isInteracting ? Math.round(val) : val;
+                const next =
+                  snapToSteps && isInteracting ? Math.round(val) : val;
                 handleChange(next);
               }}
               onValueCommit={() => {
@@ -807,6 +807,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
                 if (snapOnRelease) startSnap();
               }}
               onKeyUp={onKeyUp}
+              hideFootnote
               style={{ width: '100%' }}
             />
           )}
@@ -830,7 +831,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
           )}
         </Flex>
       ) : null}
-    </div>
+    </Flex>
   );
 };
 
