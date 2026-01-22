@@ -12,6 +12,7 @@ import { OrthographicCamera, useTexture, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { Flex } from '@components/Flex';
 import { Button } from '@components/Button';
+import { Range } from '@components/Form/Range';
 import { OverlayRoleContext } from 'components/CenterOnlyTransition/OverlayRoleContext';
 
 export interface FeelingImageMorphGLProps {
@@ -682,28 +683,6 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     ],
   );
 
-  const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = parseFloat(e.target.value);
-    cancelButtonAnim();
-    const next = snapToSteps && isInteracting ? Math.round(raw) : raw;
-    handleChange(next);
-  };
-
-  const onPointerDown = () => {
-    setIsInteracting(true);
-    cancelSnap();
-    cancelButtonAnim();
-  };
-
-  const onPointerUp = () => {
-    setIsInteracting(false);
-    if (snapOnRelease) startSnap();
-  };
-
-  const onPointerCancel = () => {
-    setIsInteracting(false);
-    if (snapOnRelease) startSnap();
-  };
 
   const onKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (!snapOnRelease) return;
@@ -810,17 +789,23 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
           )}
 
           {showSlider !== false && !buttonsOnly && (
-            <input
+            <Range
               aria-label="Image morph slider"
-              type="range"
               min={sliderMin}
               max={sliderMax}
               step={step}
               value={viewT}
-              onChange={onInput}
-              onPointerDown={onPointerDown}
-              onPointerUp={onPointerUp}
-              onPointerCancel={onPointerCancel}
+              onValueChange={(val) => {
+                // Treat as interacting during value change
+                if (!isInteracting) setIsInteracting(true);
+                cancelButtonAnim();
+                const next = snapToSteps && isInteracting ? Math.round(val) : val;
+                handleChange(next);
+              }}
+              onValueCommit={() => {
+                setIsInteracting(false);
+                if (snapOnRelease) startSnap();
+              }}
               onKeyUp={onKeyUp}
               style={{ width: '100%' }}
             />
