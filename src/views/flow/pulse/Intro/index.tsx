@@ -21,7 +21,7 @@ import pic4 from 'assets/pictures/marcelo/pic_4.png';
 import pic5 from 'assets/pictures/marcelo/pic_5.png';
 
 // Preload morph textures to avoid suspense flicker across transitions
-;(useTexture as any).preload?.([pic1, pic2, pic3, pic4, pic5]);
+(useTexture as any).preload?.([pic1, pic2, pic3, pic4, pic5]);
 
 export const Intro: React.FC = () => {
   const { goNext, goBack } = useFlowNav();
@@ -72,8 +72,7 @@ export const Intro: React.FC = () => {
       >
         <Text variant="accentMd">{t('pulse.intro.mainText')}</Text>
       </CenterToTopEntrance>
-      {/*TODO: probably remove "disabled here"*/}
-      <FromBelowReveal in={ready} disabled={!shouldAnimate}>
+      <FromBelowReveal in={ready}>
         <FeelingImageMorphGL
           images={[pic1, pic2, pic3, pic4, pic5]}
           height="clamp(220px, 42vh, 360px)"
@@ -147,9 +146,9 @@ export const Intro: React.FC = () => {
       {/*    ariaLabel={t('pulse.intro.mainText')}*/}
       {/*  />*/}
       {/*</FromBelowReveal>*/}
-      {/*<FromBelowReveal in={ready}>*/}
-      {/*  <Text>{t('pulse.intro.subtext')}</Text>*/}
-      {/*</FromBelowReveal>*/}
+      <FromBelowReveal in={ready}>
+        <Text>{t('pulse.intro.subtext')}</Text>
+      </FromBelowReveal>
     </FlowLayout>
   );
 };

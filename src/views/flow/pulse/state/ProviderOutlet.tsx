@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { CalculatorProvider } from 'features/calculator/state';
+import { CalculatorProvider } from '../../../../features/calculator/state';
 
 /**
  * ProviderOutlet wraps all calculator steps with a single CalculatorProvider
