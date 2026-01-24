@@ -9,6 +9,7 @@ import { ErrorPage } from 'views/ErrorPage';
 import { CenterTransitionShell } from 'containers/Layouts/Shells/CenterTransitionShell';
 import { AnimatedOutlet } from 'components/AnimatedOutlet';
 import { CalculatorProviderOutlet } from '../views/flow/pulse/state/ProviderOutlet';
+import { PulseProviderOutlet } from '../views/flow/pulse/state/PulseProviderOutlet';
 
 /**
  * Creates a router configuration for the given routes
@@ -28,17 +29,33 @@ const getRouter = (routes: RouteType[]) => {
     errorElement: <ErrorPage />,
   }));
 
-  // Split flow routes into calculator and other flows
+  // Split flow routes into calculator, pulse and other flows
   const calculatorRoutes = flowRoutes.filter((r) =>
     r.path?.startsWith('/flow/calculator/'),
   );
+  const pulseRoutes = flowRoutes.filter((r) =>
+    r.path?.startsWith('/flow/pulse/'),
+  );
   const otherFlowRoutes = flowRoutes.filter(
-    (r) => !r.path?.startsWith('/flow/calculator/'),
+    (r) =>
+      !r.path?.startsWith('/flow/calculator/') &&
+      !r.path?.startsWith('/flow/pulse/'),
   );
 
   // Map calculator children under a provider-wrapped parent
   const calculatorChildren = calculatorRoutes.map((route) => {
     const relative = route.path.replace(/^\/(?:flow)\/(?:calculator)\/?/, '');
+    return {
+      path: relative,
+      Component: route.Component,
+      element: route.element,
+      errorElement: <ErrorPage />,
+    };
+  });
+
+  // Map pulse children under a provider-wrapped parent
+  const pulseChildren = pulseRoutes.map((route) => {
+    const relative = route.path.replace(/^\/(?:flow)\/(?:pulse)\/?/, '');
     return {
       path: relative,
       Component: route.Component,
@@ -75,6 +92,12 @@ const getRouter = (routes: RouteType[]) => {
               element: <CalculatorProviderOutlet />,
               errorElement: <ErrorPage />,
               children: calculatorChildren,
+            },
+            {
+              path: 'pulse',
+              element: <PulseProviderOutlet />,
+              errorElement: <ErrorPage />,
+              children: pulseChildren,
             },
             ...otherFlowChildren,
           ],
