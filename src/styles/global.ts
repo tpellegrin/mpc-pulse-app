@@ -27,7 +27,37 @@ export const GlobalStyle = createGlobalStyle`
     ${typography.bodyMd};
   }
   
-  html, body, #root { height: 100% }
+  html, body, #root {
+    height: 100%;
+
+    /* Disable selection and long-press callout globally */
+    -webkit-user-select: none;  /* iOS Safari */
+    -ms-user-select: none;      /* Old Edge */
+    -moz-user-select: none;     /* Old Firefox */
+    user-select: none;          /* Modern browsers */
+    -webkit-touch-callout: none; /* Disable iOS long-press menu */
+  }
+
+  /* Optional: remove tap highlight on mobile */
+  * {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+
+  /* Re-enable selection where it should be allowed */
+  input, textarea, [contenteditable="true"], .allow-select, [data-allow-select], [data-allow-select="true"] {
+    -webkit-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    -webkit-touch-callout: default;
+  }
+
+  /* Optional: prevent image/link drag and long-press save/share sheets */
+  img, a {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    user-drag: none;
+    -webkit-touch-callout: none;
+  }
 
   /* Global transition clamp scoped to app root (variable-driven) */
   .app-root * {
@@ -54,6 +84,7 @@ export const GlobalStyle = createGlobalStyle`
     --transition-props: opacity;
   }
 
+  /* Legacy: still allow toggling no-select via class if needed */
   body.no-select {
     user-select: none;
     -webkit-user-select: none;

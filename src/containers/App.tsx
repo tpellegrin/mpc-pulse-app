@@ -1,5 +1,6 @@
 import { ThemeProvider } from 'styled-components';
 
+import { useDisableSelectionHardening } from 'hooks/useDisableSelectionHardening';
 import { NavigationProvider } from 'globals/context/NavigationContext';
 import { ProgressBarProvider } from 'globals/context/ProgressBar';
 import { AppRouter } from 'containers/AppRouter';
@@ -12,19 +13,23 @@ import { AnimationSeenProvider } from 'globals/context/AnimationSeen';
 /**
  * Main App part that sets up the application providers
  */
-export const App = () => (
-  <ThemeProvider theme={base}>
-    <GlobalStyle />
-    <FontStyles />
-    <PagePaddingStyles />
-    <div className="app-root">
-      <NavigationProvider>
-        <ProgressBarProvider>
-          <AnimationSeenProvider>
-            <AppRouter />
-          </AnimationSeenProvider>
-        </ProgressBarProvider>
-      </NavigationProvider>
-    </div>
-  </ThemeProvider>
-);
+export const App = () => {
+  useDisableSelectionHardening();
+
+  return (
+    <ThemeProvider theme={base}>
+      <GlobalStyle />
+      <FontStyles />
+      <PagePaddingStyles />
+      <div className="app-root">
+        <NavigationProvider>
+          <ProgressBarProvider>
+            <AnimationSeenProvider>
+              <AppRouter />
+            </AnimationSeenProvider>
+          </ProgressBarProvider>
+        </NavigationProvider>
+      </div>
+    </ThemeProvider>
+  );
+};
