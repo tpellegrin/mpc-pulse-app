@@ -19,7 +19,9 @@ export const _ProgressValue = styled.div.attrs({ 'data-allow-motion': true })<{
   --transition-duration: ${getAccessibleDuration(DURATION_MS)}ms;
   --transition-easing: ease-in-out;
 
-  transition: transform var(--transition-duration) var(--transition-easing);
+  transition:
+    transform var(--transition-duration) var(--transition-easing),
+    background-color var(--transition-duration) var(--transition-easing);
 
   @media screen and (prefers-reduced-motion: reduce) {
     transition: none;
@@ -34,6 +36,14 @@ export const _ProgressRoot = styled.div<{
   width: 100%;
   overflow: hidden;
   background-color: ${({ theme }) => theme.colors.accent.primary.s50};
+  /* Smoothly blend the track color when theme changes */
+  --transition-duration: ${getAccessibleDuration(DURATION_MS)}ms;
+  --transition-easing: ease-in-out;
+  transition: background-color var(--transition-duration) var(--transition-easing);
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
 
   ${({ $variant, theme }) =>
     $variant === 'rounded' &&
