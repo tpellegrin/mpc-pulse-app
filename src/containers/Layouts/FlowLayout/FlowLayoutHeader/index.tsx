@@ -1,11 +1,11 @@
 import React from 'react';
 
 import { ButtonBase } from 'components/ButtonBase';
-import { Button } from 'components/Button';
 import { LayoutProgress } from 'containers/Layouts/common/LayoutProgress';
 import { LayoutHeader } from 'containers/Layouts/common/LayoutHeader';
 
 import type { Props } from './types';
+import { BackButton } from './styles';
 
 export const FlowLayoutHeader: React.FC<Props> = ({
   prevButton,
@@ -17,14 +17,12 @@ export const FlowLayoutHeader: React.FC<Props> = ({
     <LayoutHeader
       Left={
         !!prevButton && (
-          <Button
-            variant="tertiary"
-            size="small"
-            label="←"
-            aria-label="Go back"
+          <BackButton
+            aria-label={(prevButton as any)?.['aria-label'] ?? 'Go back'}
             {...prevButton}
-            isCompact
-          />
+          >
+            {prevButton.children ?? <span aria-hidden="true">‹</span>}
+          </BackButton>
         )
       }
       Center={title ?? null}

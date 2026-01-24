@@ -1,4 +1,5 @@
 import React, { isValidElement, useContext, useEffect, useMemo } from 'react';
+import { ThemeProvider, useTheme } from 'styled-components';
 
 import { OverlayRoleContext } from 'components/CenterOnlyTransition/OverlayRoleContext';
 import {
@@ -66,6 +67,10 @@ export const FlowLayout: React.FC<Props> = ({
   const { setHeader, setFooter } = useContext(LayoutChromeContext);
   const role = useContext(OverlayRoleContext);
   const canPublish = role !== 'exit';
+  // Bridge the current (possibly overridden) theme into published header/footer
+  const theme = useTheme();
+
+  const { scrollRef, blockNavigation } = useNavigation();
 
   const [scrollLocked, setScrollLocked] = React.useState(
     scrollInitiallyLocked || Boolean(scrollLockForMs),
@@ -74,14 +79,17 @@ export const FlowLayout: React.FC<Props> = ({
   React.useEffect(() => {
     if (!scrollLockForMs) return;
     setScrollLocked(true);
+    // Bridge scroll lock into navigation rate limiter to prevent accidental nav
+    try {
+      blockNavigation(scrollLockForMs);
+    } catch {}
     const id = window.setTimeout(() => {
       setScrollLocked(false);
     }, scrollLockForMs);
     return () => window.clearTimeout(id);
-  }, [scrollLockForMs]);
+  }, [scrollLockForMs, blockNavigation]);
 
   // Apply scroll lock to the unified app scroller (BaseLayout content)
-  const { scrollRef } = useNavigation();
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
@@ -101,16 +109,18 @@ export const FlowLayout: React.FC<Props> = ({
     if (!canPublish) return;
     if (resolvedHeader) {
       setHeader(
-        <div
-          data-flow-header
-          data-allow-fade
-          style={{
-            ['--transition-duration' as string]: '200ms',
-            ['--transition-easing' as string]: 'ease',
-          }}
-        >
-          {resolvedHeader}
-        </div>,
+        <ThemeProvider theme={theme}>
+          <div
+            data-flow-header
+            data-allow-fade
+            style={{
+              ['--transition-duration' as string]: '200ms',
+              ['--transition-easing' as string]: 'ease',
+            }}
+          >
+            {resolvedHeader}
+          </div>
+        </ThemeProvider>,
       );
     } else {
       setHeader(null);
@@ -119,22 +129,24 @@ export const FlowLayout: React.FC<Props> = ({
       if (!canPublish) return;
       setHeader(null);
     };
-  }, [canPublish, resolvedHeader, setHeader]);
+  }, [canPublish, resolvedHeader, setHeader, theme]);
 
   useEffect(() => {
     if (!canPublish) return;
     if (resolvedFooter) {
       setFooter(
-        <div
-          data-flow-footer
-          data-allow-fade
-          style={{
-            ['--transition-duration' as string]: '200ms',
-            ['--transition-easing' as string]: 'ease',
-          }}
-        >
-          {resolvedFooter}
-        </div>,
+        <ThemeProvider theme={theme}>
+          <div
+            data-flow-footer
+            data-allow-fade
+            style={{
+              ['--transition-duration' as string]: '200ms',
+              ['--transition-easing' as string]: 'ease',
+            }}
+          >
+            {resolvedFooter}
+          </div>
+        </ThemeProvider>,
       );
     } else {
       setFooter(null);
@@ -143,7 +155,7 @@ export const FlowLayout: React.FC<Props> = ({
       if (!canPublish) return;
       setFooter(null);
     };
-  }, [canPublish, resolvedFooter, setFooter]);
+  }, [canPublish, resolvedFooter, setFooter, theme]);
 
   const { style: userStyle, ...restContentFlexProps } = contentFlexProps ?? {};
 

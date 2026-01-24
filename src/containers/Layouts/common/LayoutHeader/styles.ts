@@ -3,7 +3,7 @@ import { styled } from 'styled-components';
 import { from } from 'styles/media';
 import { REM_IN_PX } from 'utils/css';
 
-export const LAYOUT_HEADER_HEIGHT = 4.5 * REM_IN_PX;
+export const LAYOUT_HEADER_HEIGHT = 2.6 * REM_IN_PX;
 
 export const _LayoutHeaderRoot = styled.header`
   padding-top: env(safe-area-inset-top);
@@ -22,7 +22,7 @@ export const _LayoutHeaderContent = styled.div`
   width: 100%;
   padding-inline: ${({ theme }) => theme.spacers.md};
   padding-top: calc(
-    max(${({ theme }) => theme.spacers.md} - env(safe-area-inset-top), 0px)
+    max(${({ theme }) => theme.spacers.xxs} - env(safe-area-inset-top), 0px)
   );
 
   ${from.tablet} {
