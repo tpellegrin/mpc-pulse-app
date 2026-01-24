@@ -6,15 +6,15 @@
     },
     "q2": {
       "mainText": "E como você tem lidado emocionalmente com as pressões da rotina missionária?",
-      "subtext": "Reflita sobre como seu coração tem reagido às exigências deste tempo, e selecione a Márcia que melhor representa você."
+      "subtext": "Reflita sobre como seu coração tem reagido, e selecione a Márcia que melhor representa você."
     },
     "q3": {
       "mainText": "O quanto você sente que está apenas “no automático” na rotina atual?",
       "subtext": " Reflita se você tem vivido os dias com presença ou apenas cumprindo tarefas."
     },
     "q4": {
-      "mainText": "Mesmo com dificuldades, o quanto você tem conseguido agradecer pelas coisas do dia a dia?",
-      "subtext": "Reflita sobre sua capacidade de reconhecer motivos de gratidão."
+      "mainText": "O quanto você tem conseguido agradecer pelas coisas do dia a dia?",
+      "subtext": "Reflita sobre sua capacidade de reconhecer motivos de gratidão mesmo na dificuldade."
     },
     "q5": {
       "mainText": "Como está sua disposição para participar das atividades diárias do ministério?",
@@ -25,8 +25,8 @@
       "subtext": "Pense se os dons que Deus lhe deu encontram espaço na sua atuação atual."
     },
     "q7": {
-      "mainText": "Como você avalia sua satisfação com o que consegue entregar hoje, dentro dos seus limites?",
-      "subtext": "Pense se o que você tem feito hoje tem gerado um senso de realização e fruto."
+      "mainText": "Como você avalia sua satisfação com o que consegue entregar hoje?",
+      "subtext": "Pense se o que você tem feito hoje tem gerado um senso de realização e fruto, dentro de seus limites."
     },
     "q8": {
       "mainText": "O quanto você sente vontade de continuar neste caminho hoje?",
@@ -36,195 +36,53 @@
       "mainText": "O quanto você percebe apoio e cuidado por parte da liderança da organização?",
       "subtext": "Avalie como tem sido sua experiência de apoio por parte da liderança."
     },
+    "q10": {
+      "mainText": "O quanto você sente que tem alguém seguro com quem pode compartilhar suas lutas?",
+      "subtext": "Avalie se você tem pessoas de confiança com quem pode conversar, confessar, orar e pedir apoio."
+    },
+    "q11": {
+      "mainText": "O quanto você se sente acolhido e cuidado pelas pessoas com quem convive?",
+      "subtext": "Reflita sobre como os relacionamentos no campo missionário têm sido."
+    },
+    "q12": {
+      "mainText": "O quanto você percebe sentido, propósito e relevância no que está vivendo diante de Deus?",
+      "subtext": "Pense se você consegue perceber propósito de Deus no que está vivendo."
+    },
+    "q13": {
+      "mainText": "O quanto sua rotina diária ainda está conectada ao propósito maior do Reino?",
+      "subtext": "Reflita se o seu dia a dia continua alinhado com o chamado e a fé."
+    },
+    "q14": {
+      "mainText": "O quanto você sente que está crescendo como pessoa neste período?",
+      "subtext": "Avalie se este período tem gerado aprendizado e amadurecimento."
+    },
+    "q15": {
+      "mainText": "O quanto você tem conseguido dormir bem?",
+      "subtext": "Considere a qualidade e regularidade do seu sono."
+    },
+    "q16": {
+      "mainText": "Como está sua alimentação no dia a dia?",
+      "subtext": "Avalie se sua alimentação tem sido suficiente e equilibrada."
+    },
+    "q17": {
+      "mainText": "O quanto você tem conseguido cuidar do seu corpo?",
+      "subtext": "Reflita se você tem honrado seu corpo com cuidado e atenção (movimento, caminhada, exercício)."
+    },
+    "q18": {
+      "mainText": "O quanto você tem conseguido ter momentos de descanso ou lazer?",
+      "subtext": "Pense se há espaço para lazer e recuperação na sua rotina."
+    },
+    "q19": {
+      "mainText": "O quanto você tem conseguido estar presente e investir tempo com sua família?",
+      "subtext": "Reflita se seus vínculos familiares têm recebido atenção."
+    },
+    "q20": {
+      "mainText": "O quanto você tem conseguido ter momentos de devocional, oração e escuta de Deus?",
+      "subtext": "Avalie como tem sido seu tempo pessoal com Deus."
+    },
     "common": {
       "next": "Próximo",
       "start": "Começar"
-    }
-  },
-  "calculator": {
-    "poder_compra": {
-      "common": {
-        "next": "Próximo",
-        "start": "Começar",
-        "calculate": "Calcular meu teto",
-        "currencyExample": "R$ 10.000",
-        "currencyExampleMonthly": "R$ 1.500",
-        "currencyExampleInstallment": "R$ 3.500",
-        "months": "{m} meses",
-        "years": "{y} anos",
-        "yearsAndMonths": "{y} anos ({m} meses)",
-        "perMonth": "/mês"
-      },
-      "a11y": {
-        "savingsLabel": "Você já tem dinheiro guardado?",
-        "monthlySavingLabel": "Quanto você pode guardar por mês?",
-        "maxInstallmentLabel": "Qual valor maximo você pode pagar de parcela do financiamento?",
-        "entryPctLabel": "Quanto de entrada você deseja dar?",
-        "monthsToSaveLabel": "Em quanto tempo você deseja dar a entrada?",
-        "loanTermLabel": "Qual o tempo do financiamento?",
-        "feesLabel": "Deseja incluir as taxas da compra?"
-      },
-      "errors": {
-        "required": "Campo obrigatório",
-        "nonNegative": "Use um valor ≥ 0",
-        "min": "Mínimo: {min}",
-        "max": "Máximo: {max}",
-        "range": "Entre {min} e {max}"
-      },
-      "welcome": {
-        "title": "Poder de Compra",
-        "text": "Descubra o teto que cabe no seu bolso.",
-        "subtext": "Em poucos passos, você vai entender quanto pode investir no seu sonho da casa própria — de forma simples, prática e realista.",
-        "cta": "Começar"
-      },
-      "savings": {
-        "title": "Você já tem dinheiro guardado?",
-        "helper": "Esse é o seu ponto de partida — todo sonho começa de algum lugar. Se ainda nao comecou a guardar, nao tem problema. Pode avancar para a proxima pergunta.",
-        "subHelper": "Inclua tudo o que pode usar como entrada: poupança, FGTS ou investimentos.",
-        "placeholder": "R$ 10.000",
-        "next": "Próximo"
-      },
-      "monthlySaving": {
-        "title": "Quanto você pode guardar por mês?",
-        "helper": "Pense em um valor que caiba no seu bolso e que você consiga manter até a compra.\nA constância é o que constrói grandes conquistas.",
-        "placeholder": "R$ 10.000",
-        "next": "Próximo"
-      },
-      "maxInstallment": {
-        "title": "Qual valor maximo você pode pagar de parcela do financiamento?",
-        "helper": "O ideal é que as parcelas mensais não ultrapassem 30% da sua renda mensal. Escolha o valor máximo que caberia confortavelmente no seu orçamento.",
-        "subHelper": "Esse valor é o seu limite de conforto mensal.",
-        "placeholder": "R$ 3.500",
-        "next": "Próximo"
-      },
-      "entryPercentage": {
-        "title": "Quanto de entrada você deseja dar?",
-        "helper": "O mínimo exigido é 20% do valor do imóvel. Se quiser, pode aumentar para reduzir o valor a financiar.",
-        "next": "Próximo"
-      },
-      "savingPeriod": {
-        "title": "Por quanto tempo você deseja juntar antes de comprar uma casa?",
-        "helper": "Em quanto tempo você quer alcançar o valor total da sua entrada?\nEscolha o prazo que faz sentido para sua realidade.",
-        "yearsLabel": "Anos",
-        "next": "Próximo"
-      },
-      "loanTerm": {
-        "title": "Qual o tempo do financiamento?",
-        "helper": "O prazo máximo é de 35 anos. Escolha o tempo que você gostaria de financiar.",
-        "yearsLabel": "Anos",
-        "next": "Calcular"
-      },
-
-      "expenses": {
-        "title": "Despesas",
-        "debtsLabel": "Pagamentos mensais de dívidas (empréstimos, cartões)",
-        "livingLabel": "Despesas mensais de subsistência",
-        "notesLabel": "Notas (opcional)",
-        "next": "Próximo"
-      },
-      "credit": {
-        "title": "Crédito",
-        "back": "Voltar",
-        "scoreLabel": "Pontuação de crédito (300–850)",
-        "next": "Próximo"
-      },
-      "monthsToSave": {
-        "title": "Em quanto tempo você deseja dar a entrada?",
-        "text": "Em quanto tempo você quer alcançar o valor total da sua entrada? Escolha o prazo que faz sentido para sua realidade.",
-        "example": "{y} anos ({m} meses)",
-        "next": "Próximo"
-      },
-      "downPayment": {
-        "title": "Entrada",
-        "back": "Voltar",
-        "amountLabel": "Valor da entrada",
-        "next": "Próximo"
-      },
-      "feesPct": {
-        "title": "Deseja incluir as taxas da compra?",
-        "text": "Esses custos (ITBI, cartório e taxas bancárias) fazem parte da compra. A média é de 5 % do valor do imóvel.",
-        "options": {
-          "four": "4 %",
-          "five": "5 %",
-          "six": "6 %"
-        },
-        "calculate": "Calcular meu teto"
-      },
-      "rates": {
-        "title": "Premissas",
-        "back": "Voltar",
-        "aprLabel": "Juros (APR, %)",
-        "termLabel": "Prazo do financiamento (anos)",
-        "taxLabel": "Imposto (anual, % do preço)",
-        "insLabel": "Seguro (anual, % do preço)",
-        "hoaLabel": "Condomínio (mensal)",
-        "next": "Revisar"
-      },
-      "result": {
-        "title": "Seu teto atual é de",
-        "subtitle": "Valor máximo estimado do imóvel com base nas premissas abaixo.",
-        "summary": {
-          "main": "Veja como esse valor foi calculado, combinando sua entrada, financiamento e custos mensais.",
-          "entry": "💰 Entrada",
-          "downPayment": "Entrada estimada",
-          "costs": "🧾 Custos ({pct} %)",
-          "financing": "🏦 Financiamento",
-          "payment": "💳 Parcela estimada do financiamento",
-          "time": "📆 Tempo para juntar",
-          "saved": "💵 Valor já guardado",
-          "monthly": "Resumo mensal",
-          "principalInterest": "Financiamento (principal + juros)",
-          "tax": "Imposto",
-          "insurance": "Seguro",
-          "hoa": "Condomínio",
-          "total": "Total mensal (financiamento + custos)"
-        },
-        "message": {
-          "line1": "🎉 Parabéns! As parcelas estão abaixo do limite que você definiu.",
-          "line2": "Seu plano é viável — e ainda há espaço para crescer!",
-          "line3": "Veja três formas de aumentar seu poder de compra:"
-        },
-        "suggestions": {
-          "alt1": {
-            "title": "Aumente o prazo de poupança",
-            "desc": "Se você ampliar o tempo para juntar sua entrada em +6 meses, seu poder de compra pode subir para {P_alt1}.",
-            "cta": "Simular com mais tempo"
-          },
-          "alt2": {
-            "title": "Aumente sua poupança mensal",
-            "desc": "Se guardar +R$ 200 por mês, seu teto pode chegar a {P_alt2}.",
-            "cta": "Simular com valor maior por mês"
-          },
-          "alt3": {
-            "title": "Faça um aporte no meio da jornada",
-            "desc": "Se fizer um aporte de R$ 5.000 no meio do caminho, seu teto pode subir para {P_alt3}.",
-            "cta": "Simular com aporte"
-          }
-        },
-        "reinforcement": {
-          "text": "O tempo, a constância e as boas decisões constroem sonhos reais.\nCada escolha te aproxima mais da casa dos seus sonhos."
-        },
-        "advanced": {
-          "title": "Premissas avançadas",
-          "show": "Ajustar premissas",
-          "hide": "Ocultar premissas",
-          "interestAPR": "Juros do financiamento (ao ano)",
-          "loanTermYears": "Prazo do financiamento",
-          "years": "anos",
-          "propertyTaxAnnualPct": "Imposto sobre o imóvel (anual, % do preço)",
-          "insuranceAnnualPct": "Seguro residencial (anual, % do preço)",
-          "hoaMonthly": "Condomínio (mensal)",
-          "hoaValue": "Condomínio estimado: R$ {value}",
-          "minEntryPct": "Entrada mínima (% do valor do imóvel)",
-          "minDownLabel": "de entrada mínima"
-        },
-        "actions": {
-          "startJourney": "🧱 Usar este valor para começar sua jornada",
-          "save": "💾 Salvar simulação",
-          "redo": "Recomeçar",
-          "done": "Feito"
-        }
-      }
     }
   }
 }
