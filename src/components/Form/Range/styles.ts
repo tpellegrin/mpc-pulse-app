@@ -38,14 +38,28 @@ export const _RangeRoot = styled.div<{ $variant: RangeVariant }>`
   }
 `;
 
-export const _RangeTrack = styled.div`
+export const _RangeTrack = styled.div<{ $bgCss?: string; $dimUnfilled?: boolean }>`
   position: relative;
   width: 100%;
   height: var(--track-h);
   border-radius: ${({ theme }) => theme.borderRadii.full};
   cursor: pointer;
-  background: var(--track-bg);
+  background: ${({ $bgCss }) => $bgCss ?? 'var(--track-bg)'};
   touch-action: none; /* prevent scroll while dragging */
+
+  ${({ $dimUnfilled, $bgCss }) =>
+    $dimUnfilled && css`
+      background-image:
+        linear-gradient(
+          to right,
+          transparent var(--slider-pct, 0%),
+          rgba(0,0,0,0.18) var(--slider-pct, 0%)
+        ),
+        ${$bgCss ?? 'var(--track-bg)'};
+      background-color: transparent;
+      background-origin: padding-box;
+      background-clip: border-box;
+    `}
 `;
 
 export const _RangeThumb = styled.div`

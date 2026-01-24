@@ -11,7 +11,7 @@ import {
   _RangeThumbContent,
   _RangeMinMaxFootnote,
 } from './styles';
-import type { Props } from './types';
+import type { Props, RangeSegment, RangeSegments } from './types';
 import { usePointerRangeLogic } from './logic';
 
 export const Range: React.FC<Props> = ({
@@ -39,6 +39,9 @@ export const Range: React.FC<Props> = ({
   'aria-describedby': ariaDescribedBy,
   'aria-labelledby': ariaLabelledBy,
   hideFootnote = false,
+  segments,
+  dimUnfilled = false,
+  thumbAlign = 'value',
   ...restInputProps
 }) => {
   const safeMin = Number.isFinite(min) ? Number(min) : 0;
@@ -129,6 +132,69 @@ export const Range: React.FC<Props> = ({
   const textVariant: TextProps['variant'] =
     size === 'small' ? 'captionMd' : 'bodyMd';
 
+  const makeSegmentsCss = useCallback(
+    (segs: RangeSegments | undefined, minV: number, maxV: number, rtl: boolean) => {
+      if (!segs || (Array.isArray(segs) && (segs as any[]).length === 0)) return undefined;
+      const span = Math.max(maxV - minV, 1);
+
+      type Stop = { startPct: number; endPct: number; color: string };
+      const stops: Stop[] = Array.isArray(segs) && typeof (segs as any[])[0] === 'string'
+        ? (segs as string[]).map((color, i, arr) => {
+            const segW = 100 / arr.length;
+            const startPct = i * segW;
+            const endPct = (i + 1) * segW;
+            return { startPct, endPct, color };
+          })
+        : (segs as RangeSegment[])
+            .map(({ from, to, color }) => {
+              const startPct = ((Math.max(minV, Math.min(from, maxV)) - minV) / span) * 100;
+              const endPct = ((Math.max(minV, Math.min(to, maxV)) - minV) / span) * 100;
+              return { startPct, endPct, color };
+            })
+            .filter((s) => s.endPct > s.startPct)
+            .sort((a, b) => a.startPct - b.startPct);
+
+      const segsOrdered = rtl
+        ? stops
+            .map((s) => ({ startPct: 100 - s.endPct, endPct: 100 - s.startPct, color: s.color }))
+            .reverse()
+        : stops;
+
+      const parts = segsOrdered.map((s) => `${s.color} ${s.startPct}%, ${s.color} ${s.endPct}%`);
+      return `linear-gradient(to right, ${parts.join(', ')})`;
+    },
+    [],
+  );
+
+  const segmentsCss = useMemo(
+    () => makeSegmentsCss(segments, mMin, mMax, isRtl),
+    [segments, mMin, mMax, isRtl, makeSegmentsCss],
+  );
+
+  // Compute a visual thumb percent that can be offset to segment centers (for equal segments)
+  const visualThumbPct = useMemo(() => {
+    if (
+      thumbAlign === 'segment-center' &&
+      Array.isArray(segments) &&
+      (segments as any[]).length > 0 &&
+      typeof (segments as any[])[0] === 'string'
+    ) {
+      const S = (segments as string[]).length;
+      if (S > 0) {
+        const v = Math.min(Math.max(value, mMin), mMax);
+        const domainSpan = mMax - mMin;
+        // Only apply the centered formula when domain count matches number of segments (common case)
+        const approxMatches = Math.abs(domainSpan - (S - 1)) < 1e-6;
+        if (approxMatches) {
+          let pct = ((v - mMin + 0.5) / S) * 100; // centers: (i+0.5)/S
+          pct = Math.max(0, Math.min(100, pct));
+          return isRtl ? 100 - pct : pct;
+        }
+      }
+    }
+    return sliderPct;
+  }, [thumbAlign, segments, value, mMin, mMax, isRtl, sliderPct]);
+
   return (
     <div style={{ width: '100%' }}>
       <Control
@@ -163,7 +229,9 @@ export const Range: React.FC<Props> = ({
           aria-valuemax={mMax}
           aria-valuenow={value}
           aria-valuetext={getFormattedValue(value)}
-          aria-describedby={ariaDescribedBy ?? (hideFootnote ? undefined : footnoteId)}
+          aria-describedby={
+            ariaDescribedBy ?? (hideFootnote ? undefined : footnoteId)
+          }
           aria-labelledby={ariaLabelledBy}
           aria-orientation="horizontal"
           aria-readonly={readOnly || undefined}
@@ -181,8 +249,14 @@ export const Range: React.FC<Props> = ({
           data-dragging={isDragging ? 'true' : 'false'}
           $variant={variant}
         >
-          <_RangeTrack ref={trackRef} onPointerDown={handlePointerDown}>
-            <_RangeThumb style={{ left: `${sliderPct}%` }}>
+          <_RangeTrack
+            ref={trackRef}
+            onPointerDown={handlePointerDown}
+            $bgCss={segmentsCss ?? undefined}
+            $dimUnfilled={!!dimUnfilled}
+            style={{ ['--slider-pct' as any]: `${visualThumbPct}%` }}
+          >
+            <_RangeThumb style={{ left: `${visualThumbPct}%` }}>
               <_RangeThumbContent />
             </_RangeThumb>
           </_RangeTrack>

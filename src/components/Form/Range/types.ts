@@ -3,6 +3,9 @@ import type { InputHTMLAttributes, ReactNode } from 'react';
 export type RangeType = 'money' | 'percentage' | 'raw';
 export type RangeVariant = 'flat' | 'low-high' | 'good-bad';
 
+export type RangeSegment = { from: number; to: number; color: string };
+export type RangeSegments = string[] | RangeSegment[];
+
 type ControlAttributesToOmit =
   | 'value'
   | 'min'
@@ -36,6 +39,9 @@ export type Props = Omit<
   onValueChange?: (value: number) => void;
   onValueCommit?: (value: number) => void;
   hideFootnote?: boolean;
+  segments?: RangeSegments;
+  dimUnfilled?: boolean;
+  thumbAlign?: 'value' | 'segment-center';
 };
 
 export type LogicProps = Required<
