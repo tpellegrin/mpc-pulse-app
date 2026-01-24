@@ -21,7 +21,7 @@ export const Button: React.FC<Props> = ({
   const textVariant = useMemo<
     NonNullable<React.ComponentProps<typeof Text>['variant']>
   >(() => {
-    if (size === 'medium') return 'bodyMdBold';
+    if (size === 'medium') return 'headingXsBold';
     return 'captionMdBold';
   }, [size]);
 

@@ -5,7 +5,7 @@ import { ButtonBase } from 'components/ButtonBase';
 import { onlyHoverDevice } from 'styles/media';
 import type { Props } from './types';
 
-export const TRANSITION_MS = 150;
+export const TRANSITION_MS = 220;
 
 export const _ButtonRoot = styled(ButtonBase)<{
   $variant: Props['variant'];
@@ -17,10 +17,10 @@ export const _ButtonRoot = styled(ButtonBase)<{
   align-items: center;
   justify-content: center;
   transition:
-    ${TRANSITION_MS}ms box-shadow ease-in,
-    ${TRANSITION_MS}ms border-color ease-in,
-    ${TRANSITION_MS}ms background-color ease-in,
-    ${TRANSITION_MS}ms color ease-in;
+    box-shadow ${TRANSITION_MS}ms ease-in-out,
+    border-color ${TRANSITION_MS}ms ease-in-out,
+    background-color ${TRANSITION_MS}ms ease-in-out,
+    color ${TRANSITION_MS}ms ease-in-out;
   gap: ${({ theme }) => theme.spacers.xs};
   width: 100%;
   border: 1px solid ${({ theme }) => theme.colors.border.default};
@@ -30,7 +30,7 @@ export const _ButtonRoot = styled(ButtonBase)<{
   background-color: ${({ theme }) => theme.colors.action.secondary};
 
   &::after {
-    transition: ${TRANSITION_MS}ms opacity ease-in;
+    transition: opacity ${TRANSITION_MS}ms ease-in-out;
     opacity: 0;
     content: '';
     position: absolute;
@@ -40,6 +40,14 @@ export const _ButtonRoot = styled(ButtonBase)<{
     bottom: 0;
     border-radius: ${({ theme }) => theme.borderRadii.full};
     pointer-events: none;
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &::after {
+      transition: none;
+    }
   }
 
   ${onlyHoverDevice} {
