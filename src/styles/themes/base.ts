@@ -38,7 +38,7 @@ export const base: Theme = {
       secondaryHover: foundations.colors.whiteA40,
       tertiary: foundations.colors.transparent,
       tertiaryHover: foundations.colors.whiteA40,
-      accent: foundations.colors.darkGreen100,
+      accent: foundations.colors.yellow100,
       accentHover: foundations.colors.purple50,
       disabled: foundations.colors.tan150,
     },
