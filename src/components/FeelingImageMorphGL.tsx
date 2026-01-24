@@ -3,17 +3,19 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useLayoutEffect,
   useRef,
   useState,
   useContext,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrthographicCamera, useTexture, Html } from '@react-three/drei';
+import { OrthographicCamera, useTexture, Html, View } from '@react-three/drei';
 import * as THREE from 'three';
 import { Flex } from '@components/Flex';
 import { Button } from '@components/Button';
 import { Range } from '@components/Form/Range';
 import { OverlayRoleContext } from 'components/CenterOnlyTransition/OverlayRoleContext';
+import { usePulseCanvasReady } from '../views/flow/pulse/state/PulseCanvasHost';
 
 export interface FeelingImageMorphGLProps {
   images: string[];
@@ -42,6 +44,9 @@ export interface FeelingImageMorphGLProps {
 
   // Persist last rendered frame across remounts (used during route transitions)
   persistLastFrameKey?: string;
+
+  // When true, render into a shared persistent Canvas via drei <View>
+  useSharedCanvas?: boolean;
 }
 
 const clamp = (v: number, min: number, max: number) =>
@@ -404,6 +409,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   transitionDurationMs = 350,
   disableButtonsAtEnds = true,
   persistLastFrameKey,
+  useSharedCanvas = false,
 }) => {
   if (!images || images.length < 2) {
     return (
@@ -503,7 +509,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     height: '100%',
     overflow: 'hidden',
     borderRadius: 12,
-    background: bgColor, // letterbox/pillarbox color
+    background: useSharedCanvas ? 'transparent' : bgColor, // in shared mode, let Canvas show through
   };
   const sliderWrap: React.CSSProperties = {
     display: 'flex',
@@ -524,7 +530,93 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   //   zIndex: 3,
   // };
 
+  // Provide a stable element for R3F to attach pointer/keyboard events to
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+  // Option B: delay Canvas mount until after the viewport exists and a frame has painted
+  const [showCanvas, setShowCanvas] = useState(false);
+  useLayoutEffect(() => {
+    let raf1 = 0 as number | ReturnType<typeof requestAnimationFrame>;
+    let raf2 = 0 as number | ReturnType<typeof requestAnimationFrame>;
+    const rAF = typeof requestAnimationFrame === 'function'
+      ? requestAnimationFrame
+      : ((cb: FrameRequestCallback) => window.setTimeout(() => cb(performance.now()), 16));
+    const cAF = typeof cancelAnimationFrame === 'function'
+      ? cancelAnimationFrame
+      : ((id: number) => window.clearTimeout(id));
+
+    raf1 = rAF(() => {
+      raf2 = rAF(() => setShowCanvas(true));
+    });
+
+    return () => {
+      if (raf1) cAF(raf1 as number);
+      if (raf2) cAF(raf2 as number);
+    };
+  }, []);
+
+  // Shared Canvas readiness and robust fallback to local Canvas
+  const sharedReady = usePulseCanvasReady();
+  const [fallbackLocal, setFallbackLocal] = useState(false);
+
+  useEffect(() => {
+    if (!useSharedCanvas) return;
+    let id: any;
+    if (!sharedReady) {
+      id = setTimeout(() => setFallbackLocal(true), 300);
+    } else {
+      setFallbackLocal(false);
+    }
+    return () => {
+      if (id) clearTimeout(id);
+    };
+  }, [useSharedCanvas, sharedReady]);
+
+  // Track whether the viewport has a non-zero size to allow <View> registration
+  const [viewportHasSize, setViewportHasSize] = useState(false);
+  const [viewportDims, setViewportDims] = useState<{w: number; h: number}>({ w: 0, h: 0 });
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) {
+      setViewportHasSize(false);
+      setViewportDims({ w: 0, h: 0 });
+      return;
+    }
+    const update = () => {
+      const r = el.getBoundingClientRect();
+      setViewportHasSize(r.width > 0 && r.height > 0);
+      setViewportDims({ w: Math.round(r.width), h: Math.round(r.height) });
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+    };
+  }, []);
+
+  const canUseShared = Boolean(
+    useSharedCanvas &&
+    sharedReady &&
+    viewportHasSize &&
+    viewportRef.current &&
+    !fallbackLocal,
+  );
+  const viewKey = canUseShared ? `${viewportDims.w}x${viewportDims.h}` : undefined;
+
   const [isInteracting, setIsInteracting] = useState(false);
+
+  // If the shared canvas view doesn't produce a first frame shortly after mounting,
+  // fall back to a local Canvas to avoid blank content due to timing races.
+  useEffect(() => {
+    if (!useSharedCanvas) return;
+    if (!showCanvas) return;
+    if (!canUseShared) return;
+    if (firstFrameDrawn) return;
+    const id = window.setTimeout(() => {
+      if (!firstFrameDrawn) setFallbackLocal(true);
+    }, 800);
+    return () => window.clearTimeout(id);
+  }, [useSharedCanvas, showCanvas, canUseShared, firstFrameDrawn]);
 
   // Preload textures in advance to avoid Suspense flicker on remounts (e.g., during transitions)
   useEffect(() => {
@@ -699,8 +791,8 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   };
 
   return (
-    <Flex gap="xl" style={wrapperStyle} className={className}>
-      <div style={viewportStyle}>
+    <Flex gap="md" style={wrapperStyle} className={className}>
+      <div ref={viewportRef} style={viewportStyle}>
         {showCover && (
           <img
             src={images[currentIndexForLabel]}
@@ -719,50 +811,104 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
             }}
           />
         )}
-        <Canvas
-          dpr={1}
-          gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
-          onCreated={({ gl }) => {
-            gl.outputColorSpace = THREE.SRGBColorSpace;
-            gl.toneMapping = THREE.NoToneMapping;
-            gl.setClearColor(0x000000, 0);
-          }}
-        >
-          <Suspense
-            fallback={
-              <Html fullscreen>
-                <img
-                  src={images[currentIndexForLabel]}
-                  alt=""
-                  style={{
-                    position: 'absolute',
-                    inset: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    objectPosition: 'center',
-                    borderRadius: 12,
-                    pointerEvents: 'none',
-                  }}
+        {!isExit && showCanvas && (
+          canUseShared ? (
+            <View key={viewKey} track={viewportRef as any}>
+              <Suspense
+                fallback={
+                  <Html fullscreen>
+                    <img
+                      src={images[currentIndexForLabel]}
+                      alt=""
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'center',
+                        borderRadius: 12,
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </Html>
+                }
+              >
+                {/* Hide the entering DOM cover once the shared Canvas has rendered a frame */}
+                {isEnter && (
+                  <FirstFrame onFirstFrame={() => setFirstFrameDrawn(true)} />
+                )}
+                <GLContent
+                  images={images}
+                  displacementUrl={displacementUrl}
+                  indexI={i}
+                  indexJ={j}
+                  fTarget={f}
+                  intensity={intensity}
+                  disableDamping={disableDamping}
                 />
-              </Html>
-            }
-          >
-            {/* Hide the entering DOM cover once the Canvas has rendered a frame */}
-            {isEnter && (
-              <FirstFrame onFirstFrame={() => setFirstFrameDrawn(true)} />
-            )}
-            <GLContent
-              images={images}
-              displacementUrl={displacementUrl}
-              indexI={i}
-              indexJ={j}
-              fTarget={f}
-              intensity={intensity}
-              disableDamping={disableDamping}
-            />
-          </Suspense>
-        </Canvas>
+              </Suspense>
+            </View>
+          ) : (
+            <Canvas
+              // Provide explicit event target to prevent null parent during animated mounts
+              eventSource={viewportRef as unknown as React.RefObject<HTMLElement>}
+              eventPrefix="client"
+              dpr={1}
+              gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+              onCreated={(state) => {
+                const { gl } = state;
+                gl.outputColorSpace = THREE.SRGBColorSpace;
+                gl.toneMapping = THREE.NoToneMapping;
+                gl.setClearColor(0x000000, 0);
+                // Defensive: ensure events are connected to the viewport after creation
+                const target = viewportRef.current as unknown as HTMLElement | null;
+                const anyState = state as any;
+                try {
+                  if (target && anyState?.events) {
+                    anyState.events.disconnect?.();
+                    anyState.events.connect?.(target);
+                  }
+                } catch {}
+              }}
+            >
+              <Suspense
+                fallback={
+                  <Html fullscreen>
+                    <img
+                      src={images[currentIndexForLabel]}
+                      alt=""
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'center',
+                        borderRadius: 12,
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </Html>
+                }
+              >
+                {/* Hide the entering DOM cover once the Canvas has rendered a frame */}
+                {isEnter && (
+                  <FirstFrame onFirstFrame={() => setFirstFrameDrawn(true)} />
+                )}
+                <GLContent
+                  images={images}
+                  displacementUrl={displacementUrl}
+                  indexI={i}
+                  indexJ={j}
+                  fTarget={f}
+                  intensity={intensity}
+                  disableDamping={disableDamping}
+                />
+              </Suspense>
+            </Canvas>
+          )
+        )}
         {/*<div style={labelBadge} aria-hidden="true">*/}
         {/*  {labelText}*/}
         {/*</div>*/}
