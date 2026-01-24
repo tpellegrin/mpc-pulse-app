@@ -27,7 +27,7 @@ export const FromBelowReveal: React.FC<Props> = ({
 
   // Activate immediately when disabled or in exit overlay
   React.useLayoutEffect(() => {
-    if (disabled || isExit) {
+    if (disabled || isExit || delayMs == 0) {
       setActive(true);
       return;
     }
@@ -63,9 +63,10 @@ export const FromBelowReveal: React.FC<Props> = ({
   }, [active, isIn, disabled]);
 
   // Force zero reveal delay on exit overlays or when disabled
-  const mergedStyle: React.CSSProperties & RevealVars = disabled || isExit
-    ? { ...(style ?? {}), ['--reveal-delay']: '0ms' }
-    : (style as React.CSSProperties & RevealVars);
+  const mergedStyle: React.CSSProperties & RevealVars =
+    disabled || isExit
+      ? { ...(style ?? {}), ['--reveal-delay']: '0ms' }
+      : (style as React.CSSProperties & RevealVars);
 
   const freeze = isExit || disabled; // disable transitions and keep final state
 
