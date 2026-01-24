@@ -1,9 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useNavigation } from 'globals/context/NavigationContext';
-import { TransitionType } from 'containers/Layouts/common/LayoutTransitionContainer/types';
-import { useTransitionLock } from 'hooks/useTransitionLock';
-import { getAccessibleDuration, TRANSITIONS } from 'utils/transitions/config';
+import { DURATION_MS, TransitionType } from 'containers/Layouts/common/LayoutTransitionContainer/types';
+import { getAccessibleDuration } from 'utils/transitions/config';
 import { FlowId, getNextStepPath, parseFlowFromPath } from 'flows/fromPaths';
 
 /**
@@ -14,11 +13,12 @@ import { FlowId, getNextStepPath, parseFlowFromPath } from 'flows/fromPaths';
  * global baseline Fade.
  */
 export const useFlowNav = () => {
-  const duration = getAccessibleDuration(TRANSITIONS.duration.default);
-  const { lock } = useTransitionLock();
-  const { setNextTransitionIntent } = useNavigation();
+  const { tryAcquireNavLock, setNextTransitionIntent } = useNavigation();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+
+  // Align lock to center transition duration plus a small finalize buffer
+  const lockMs = getAccessibleDuration(DURATION_MS) + 120;
 
   /**
    * Advance to the next step in the flow.
@@ -26,7 +26,7 @@ export const useFlowNav = () => {
    * A new screen slides in from the right; content moves left.
    */
   const goNext = (to?: string) => {
-    if (!lock(duration)) return;
+    if (!tryAcquireNavLock(lockMs)) return;
     setNextTransitionIntent(TransitionType.ltr);
 
     let target = to;
@@ -47,7 +47,7 @@ export const useFlowNav = () => {
    * A new screen slides in from the left; content moves right.
    */
   const goBack = (to: string | number = -1) => {
-    if (!lock(duration)) return;
+    if (!tryAcquireNavLock(lockMs)) return;
     setNextTransitionIntent(TransitionType.rtl);
     // @ts-expect-error react-router supports numeric delta
     return navigate(to);

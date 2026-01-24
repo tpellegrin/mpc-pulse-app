@@ -9,7 +9,8 @@ import React, {
 } from 'react';
 
 import { RouterType } from 'globals/types';
-import { TransitionType } from 'containers/Layouts/common/LayoutTransitionContainer/types';
+import { DURATION_MS, TransitionType } from 'containers/Layouts/common/LayoutTransitionContainer/types';
+import { getAccessibleDuration } from 'utils/transitions/config';
 
 type NavigationContextProps = {
   routerType: RouterType;
@@ -20,6 +21,10 @@ type NavigationContextProps = {
   // One-shot pending transition to reflect user intent on the next navigation
   nextTransitionRef: React.MutableRefObject<TransitionType | null>;
   setNextTransitionIntent: (t: TransitionType | null) => void;
+  // Navigation rate limiting
+  isNavBlocked: boolean;
+  blockNavigation: (ms: number) => void;
+  tryAcquireNavLock: (ms?: number) => boolean;
 };
 
 const NavigationContext = createContext<NavigationContextProps>({
@@ -32,6 +37,9 @@ const NavigationContext = createContext<NavigationContextProps>({
     current: null,
   } as React.MutableRefObject<TransitionType | null>,
   setNextTransitionIntent: () => {},
+  isNavBlocked: false,
+  blockNavigation: () => {},
+  tryAcquireNavLock: () => true,
 });
 
 export const NavigationProvider: FC<{ children: ReactNode }> = ({
@@ -45,6 +53,38 @@ export const NavigationProvider: FC<{ children: ReactNode }> = ({
     nextTransitionRef.current = t;
   };
 
+  // Navigation rate limiter state
+  const navBlockedUntilRef = useRef(0);
+  const [navBlockTick, setNavBlockTick] = useState(0);
+  const isNavBlocked = Date.now() < navBlockedUntilRef.current;
+
+  const forceUpdateAfter = (ms: number) => {
+    if (ms <= 0) return;
+    window.setTimeout(() => setNavBlockTick((n) => n + 1), ms + 1);
+  };
+
+  const defaultLockMs = getAccessibleDuration(DURATION_MS) + 120;
+
+  const blockNavigation = (ms: number) => {
+    const until = Date.now() + Math.max(0, ms);
+    if (until > navBlockedUntilRef.current) {
+      navBlockedUntilRef.current = until;
+      forceUpdateAfter(until - Date.now());
+      // also tick now to propagate disabled state immediately
+      setNavBlockTick((n) => n + 1);
+    }
+  };
+
+  const tryAcquireNavLock = (ms: number = defaultLockMs) => {
+    const now = Date.now();
+    if (now < navBlockedUntilRef.current) return false;
+    navBlockedUntilRef.current = now + Math.max(0, ms);
+    // propagate to consumers and schedule unblock tick
+    setNavBlockTick((n) => n + 1);
+    forceUpdateAfter(ms);
+    return true;
+  };
+
   const value = useMemo(
     () => ({
       routerType,
@@ -54,8 +94,11 @@ export const NavigationProvider: FC<{ children: ReactNode }> = ({
       scrollRef,
       nextTransitionRef,
       setNextTransitionIntent,
+      isNavBlocked,
+      blockNavigation,
+      tryAcquireNavLock,
     }),
-    [routerType, transition],
+    [routerType, transition, navBlockTick],
   );
 
   return (
