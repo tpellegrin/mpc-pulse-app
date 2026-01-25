@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useLayoutEffect, useRef, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Canvas } from '@react-three/fiber';
 import { View } from '@react-three/drei';
 import * as THREE from 'three';
@@ -23,14 +29,19 @@ export const PulseCanvasHost: React.FC = () => {
   useLayoutEffect(() => {
     let id1: number | null = null;
     let id2: number | null = null;
-    const rAF = typeof requestAnimationFrame === 'function'
-      ? requestAnimationFrame
-      : (cb: FrameRequestCallback) => window.setTimeout(() => cb(performance.now()), 16);
-    const cAF = typeof cancelAnimationFrame === 'function'
-      ? cancelAnimationFrame
-      : ((id: number) => window.clearTimeout(id));
+    const rAF =
+      typeof requestAnimationFrame === 'function'
+        ? requestAnimationFrame
+        : (cb: FrameRequestCallback) =>
+            window.setTimeout(() => cb(performance.now()), 16);
+    const cAF =
+      typeof cancelAnimationFrame === 'function'
+        ? cancelAnimationFrame
+        : (id: number) => window.clearTimeout(id);
 
-    id1 = rAF(() => { id2 = rAF(() => setReady(true)); });
+    id1 = rAF(() => {
+      id2 = rAF(() => setReady(true));
+    });
     return () => {
       if (id1 != null) cAF(id1);
       if (id2 != null) cAF(id2);
@@ -52,8 +63,14 @@ export const PulseCanvasHost: React.FC = () => {
       >
         <Canvas
           ref={canvasRef}
-          dpr={[1, 2]}
-          gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+          dpr={[1, 1.5]}
+          frameloop="demand"
+          gl={{
+            alpha: true,
+            antialias: false,
+            powerPreference: 'high-performance',
+            preserveDrawingBuffer: true,
+          }}
           onCreated={({ gl }) => {
             gl.outputColorSpace = THREE.SRGBColorSpace;
             gl.toneMapping = THREE.NoToneMapping;
@@ -61,7 +78,6 @@ export const PulseCanvasHost: React.FC = () => {
           }}
           // Ensure the canvas itself does not intercept pointer events
           style={{ pointerEvents: 'none' }}
-          // Keep default frameloop (always) as morph animations rely on frame updates
           eventPrefix="client"
         >
           {/* Shared view port for all <View> instances on Pulse pages */}
