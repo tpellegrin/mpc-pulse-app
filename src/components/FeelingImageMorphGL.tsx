@@ -846,16 +846,64 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     snapRaf.current != null ||
     (isEnter && !firstFrameDrawn);
 
-  const showDomCover =
-    (!canUseShared || fallbackLocal) &&
-    (isExit || (isEnter && !firstFrameDrawn));
+  // Always show a DOM cover during exit/enter to avoid any flash, regardless of shared canvas state
+  const showDomCover = isExit || (isEnter && !firstFrameDrawn);
+
+  // Snapshot cover of the last rendered frame to guarantee no blank during transitions
+  const [coverSrc, setCoverSrc] = useState<string | null>(null);
+  const [forceCover, setForceCover] = useState(false);
+
+  const captureLastFrame = useCallback(() => {
+    try {
+      // Prefer the shared canvas if present
+      const shared = document.querySelector(
+        'canvas[data-pulse-shared="1"]',
+      ) as HTMLCanvasElement | null;
+      const local = viewportRef.current?.querySelector('canvas') as
+        | HTMLCanvasElement
+        | null;
+      const canvas = shared || local;
+      if (!canvas) return;
+      try {
+        const url = canvas.toDataURL('image/png');
+        if (url && typeof url === 'string') setCoverSrc(url);
+      } catch {
+        // Some browsers may block toDataURL; ignore
+      }
+    } catch {}
+  }, []);
+
+  // Listen for global cover-show requests (e.g., right before navigation)
+  useEffect(() => {
+    const onShow = () => {
+      setForceCover(true);
+      captureLastFrame();
+    };
+    document.addEventListener('pulse:cover-show', onShow);
+    return () => document.removeEventListener('pulse:cover-show', onShow);
+  }, [captureLastFrame]);
+
+  // Capture when starting to exit
+  useEffect(() => {
+    if (isExit) captureLastFrame();
+  }, [isExit, captureLastFrame]);
+
+  // Clear forced cover when the entering view draws its first frame
+  useEffect(() => {
+    if (isEnter && firstFrameDrawn) {
+      setForceCover(false);
+      setCoverSrc(null);
+    }
+  }, [isEnter, firstFrameDrawn]);
+
+  const showCover = showDomCover || forceCover || !!coverSrc;
 
   return (
     <Flex gap="md" style={wrapperStyle} className={className}>
       <div ref={viewportRef} style={viewportStyle}>
-        {showDomCover && (
+        {showCover && (
           <img
-            src={images[currentIndexForLabel]}
+            src={coverSrc ?? images[currentIndexForLabel]}
             alt=""
             aria-hidden
             style={{
@@ -870,6 +918,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
               zIndex: 2,
               opacity: isExit ? 1 : firstFrameDrawn ? 0 : 1,
               transition: 'opacity 140ms ease-out',
+              willChange: 'opacity, transform',
             }}
           />
         )}

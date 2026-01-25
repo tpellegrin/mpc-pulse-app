@@ -162,7 +162,11 @@ export const PulseQuestion: React.FC<PulseQuestionProps> = ({
           prevButton: {
             onClick: () => {
               commit(morphT);
-              void goBack();
+              // Synchronously show transition cover before navigating back
+              try { document.dispatchEvent(new Event('pulse:cover-show')); } catch {}
+              const nav = () => void goBack();
+              if (typeof requestAnimationFrame === 'function') requestAnimationFrame(nav);
+              else setTimeout(nav, 0);
             },
             disabled: isNavBlocked,
           },
@@ -184,7 +188,11 @@ export const PulseQuestion: React.FC<PulseQuestionProps> = ({
                 onClick={() => {
                   // Ensure current selection is persisted even if user clicks Next without releasing the slider
                   commit(morphT);
-                  void goNext();
+                  // Show transition cover synchronously and defer navigation one frame
+                  try { document.dispatchEvent(new Event('pulse:cover-show')); } catch {}
+                  const nav = () => void goNext();
+                  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(nav);
+                  else setTimeout(nav, 0);
                 }}
                 aria-label={t('pulse.common.next')}
                 label={t('pulse.common.next')}

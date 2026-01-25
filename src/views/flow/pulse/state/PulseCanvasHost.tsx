@@ -76,6 +76,8 @@ export const PulseCanvasHost: React.FC = () => {
             gl.toneMapping = THREE.NoToneMapping;
             gl.setClearColor(0x000000, 0);
           }}
+          // Mark as shared Pulse canvas for snapshot queries
+          data-pulse-shared="1"
           // Ensure the canvas itself does not intercept pointer events
           style={{ pointerEvents: 'none' }}
           eventPrefix="client"
