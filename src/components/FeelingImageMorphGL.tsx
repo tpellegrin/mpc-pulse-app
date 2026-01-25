@@ -223,15 +223,15 @@ function MorphScene({
 
   // Ensure proper color spaces and filters
   useEffect(() => {
-    const maxAniso = Math.min(4, gl.capabilities.getMaxAnisotropy?.() || 1);
     textures.forEach((t) => {
       if (!t) return;
+      // UI photos: avoid mipmap generation stalls and keep sampling simple
       t.colorSpace = THREE.SRGBColorSpace; // photos are sRGB
       t.wrapS = THREE.ClampToEdgeWrapping;
       t.wrapT = THREE.ClampToEdgeWrapping;
       t.magFilter = THREE.LinearFilter;
-      t.minFilter = THREE.LinearMipmapLinearFilter;
-      t.anisotropy = maxAniso;
+      t.minFilter = THREE.LinearFilter;
+      t.generateMipmaps = false;
       t.needsUpdate = true;
     });
 
@@ -914,6 +914,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
                 alpha: true,
                 antialias: false,
                 powerPreference: 'high-performance',
+                preserveDrawingBuffer: true,
               }}
               onCreated={(state) => {
                 const { gl } = state;
