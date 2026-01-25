@@ -7,7 +7,7 @@ import { SignIn } from './SignIn';
 import { Welcome } from './Welcome';
 import { Intro as PulseIntro } from '../flow/pulse/Intro';
 import { Q2 as PulseQ2 } from '../flow/pulse/Q2';
-import { PulseQuestion } from '../flow/pulse/_shared/PulseQuestion';
+import { PulseQuestion } from '../flow/pulse/shared/PulseQuestion';
 import { Result as PulseResult } from '../flow/pulse/Result';
 
 export const GuestRoutes: RouteType[] = [
