@@ -68,7 +68,11 @@ export const Intro: React.FC = () => {
             onClick: () => {
               // Persist current selection before navigating back
               commitIntro(morphT);
-              void goBack(paths.welcome);
+              // Show transition cover and defer navigation by a frame to avoid flicker
+              try { document.dispatchEvent(new Event('pulse:cover-show')); } catch {}
+              const nav = () => void goBack(paths.welcome);
+              if (typeof requestAnimationFrame === 'function') requestAnimationFrame(nav);
+              else setTimeout(nav, 0);
             },
             disabled: isNavBlocked,
           },
@@ -90,7 +94,11 @@ export const Intro: React.FC = () => {
                 onClick={() => {
                   // Persist current selection before navigating forward
                   commitIntro(morphT);
-                  void goNext();
+                  // Show transition cover synchronously and defer navigation by a frame
+                  try { document.dispatchEvent(new Event('pulse:cover-show')); } catch {}
+                  const nav = () => void goNext();
+                  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(nav);
+                  else setTimeout(nav, 0);
                 }}
                 aria-label={t('pulse.common.next')}
                 label={t('pulse.common.next')}

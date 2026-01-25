@@ -63,7 +63,11 @@ export const Q2: React.FC = () => {
             onClick: () => {
               // Persist current selection before navigating back
               commitQ2(morphT);
-              void goBack();
+              // Show transition cover and defer navigation by a frame to avoid flicker
+              try { document.dispatchEvent(new Event('pulse:cover-show')); } catch {}
+              const nav = () => void goBack();
+              if (typeof requestAnimationFrame === 'function') requestAnimationFrame(nav);
+              else setTimeout(nav, 0);
             },
             disabled: isNavBlocked,
           },
