@@ -9,7 +9,7 @@ import React, {
   useContext,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrthographicCamera, useTexture, Html, View } from '@react-three/drei';
+import { OrthographicCamera, useTexture, View } from '@react-three/drei';
 import * as THREE from 'three';
 import { Flex } from '@components/Flex';
 import { Button } from '@components/Button';
@@ -124,6 +124,13 @@ function makeNoiseTexture(size = 256): THREE.DataTexture {
   return texture;
 }
 
+// Cache a single instance of the generated noise texture across mounts
+let CACHED_NOISE_TEX: THREE.DataTexture | null = null;
+function getNoiseTexture() {
+  if (!CACHED_NOISE_TEX) CACHED_NOISE_TEX = makeNoiseTexture(256);
+  return CACHED_NOISE_TEX;
+}
+
 // IMPORTANT CHANGE:
 // - We no longer do cover/contain in the shader.
 // - We do "contain" by scaling the plane geometry in world units (letterbox via CSS bg).
@@ -197,6 +204,7 @@ type MorphSceneProps = {
   fTarget: number; // 0..1
   intensity: number;
   disableDamping?: boolean;
+  bgColor?: string;
 };
 
 function MorphScene({
@@ -207,13 +215,15 @@ function MorphScene({
   fTarget,
   intensity,
   disableDamping,
+  bgColor,
 }: MorphSceneProps) {
   const materialRef = useRef<THREE.ShaderMaterial>(null!);
   const progressRef = useRef<number>(fTarget);
-  const { size, viewport, gl } = useThree();
+  const { size, viewport, gl, invalidate } = useThree();
 
   // Ensure proper color spaces and filters
   useEffect(() => {
+    const maxAniso = Math.min(4, gl.capabilities.getMaxAnisotropy?.() || 1);
     textures.forEach((t) => {
       if (!t) return;
       t.colorSpace = THREE.SRGBColorSpace; // photos are sRGB
@@ -221,7 +231,7 @@ function MorphScene({
       t.wrapT = THREE.ClampToEdgeWrapping;
       t.magFilter = THREE.LinearFilter;
       t.minFilter = THREE.LinearMipmapLinearFilter;
-      t.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy?.() || 1);
+      t.anisotropy = maxAniso;
       t.needsUpdate = true;
     });
 
@@ -249,7 +259,11 @@ function MorphScene({
     // prevent boundary twitch when pair changes by syncing progress
     progressRef.current = fTarget;
     mat.uniforms.uProgress.value = fTarget;
-  }, [indexI, indexJ, textures, dispTex, fTarget]);
+    // ensure a frame is rendered in demand mode
+    try {
+      invalidate();
+    } catch {}
+  }, [indexI, indexJ, textures, dispTex, fTarget, invalidate]);
 
   // Update resolution uniform using actual drawing buffer size (more reliable on mobile)
   useEffect(() => {
@@ -258,7 +272,10 @@ function MorphScene({
     const buf = new THREE.Vector2();
     gl.getDrawingBufferSize(buf);
     mat.uniforms.uResolution.value.set(buf.x, buf.y);
-  }, [size, gl]);
+    try {
+      invalidate();
+    } catch {}
+  }, [size, gl, invalidate]);
 
   // Animate progress (damping)
   useFrame(() => {
@@ -274,6 +291,13 @@ function MorphScene({
 
     mat.uniforms.uProgress.value = clamp(progressRef.current, 0, 1);
     mat.uniforms.uIntensity.value = intensity;
+
+    // In demand mode, request frames while progress hasn't settled
+    if (Math.abs(fTarget - progressRef.current) > 0.0005) {
+      try {
+        invalidate();
+      } catch {}
+    }
   });
 
   const shaderMaterial = useMemo(
@@ -316,10 +340,22 @@ function MorphScene({
     aspect,
   );
 
+  const bgHex = useMemo(() => new THREE.Color(bgColor || '#FAF8F4'), [bgColor]);
+
   return (
     <>
       <OrthographicCamera makeDefault position={[0, 0, 1]} />
-      {/* Plane scaled to "contain" inside viewport; background comes from CSS */}
+
+      {/* Background plane fills the view to avoid transparent letterbox in shared canvas */}
+      <mesh
+        scale={[viewport.width, viewport.height, 1]}
+        position={[0, 0, -0.5]}
+      >
+        <planeGeometry args={[1, 1, 1, 1]} />
+        <meshBasicMaterial color={bgHex} toneMapped={false} />
+      </mesh>
+
+      {/* Foreground plane scaled to "contain" inside viewport */}
       <mesh scale={[planeW, planeH, 1]}>
         <planeGeometry args={[1, 1, 1, 1]} />
         <primitive
@@ -341,6 +377,7 @@ type GLContentProps = {
   fTarget: number;
   intensity: number;
   disableDamping?: boolean;
+  bgColor?: string;
 };
 
 function GLContent({
@@ -351,6 +388,7 @@ function GLContent({
   fTarget,
   intensity,
   disableDamping,
+  bgColor,
 }: GLContentProps) {
   // Preload all image textures inside Canvas context
   const textures = useTexture(images) as unknown as THREE.Texture[];
@@ -358,7 +396,7 @@ function GLContent({
   // Displacement texture: either from URL or generated noise (hooks called inside Canvas)
   const fallbackForHook = displacementUrl || images[0];
   const loadedDisp = useTexture(fallbackForHook) as THREE.Texture;
-  const noiseDisp = useMemo(() => makeNoiseTexture(256), []);
+  const noiseDisp = useMemo(() => getNoiseTexture(), []);
   const dispTex = displacementUrl ? loadedDisp : noiseDisp;
 
   return (
@@ -370,6 +408,7 @@ function GLContent({
       fTarget={fTarget}
       intensity={intensity}
       disableDamping={disableDamping}
+      bgColor={bgColor}
     />
   );
 }
@@ -382,6 +421,16 @@ function FirstFrame({ onFirstFrame }: { onFirstFrame: () => void }) {
       onFirstFrame();
     }
   });
+  return null;
+}
+
+function InvalidateOnSize({ w, h }: { w: number; h: number }) {
+  const { invalidate } = useThree();
+  useEffect(() => {
+    try {
+      invalidate();
+    } catch {}
+  }, [w, h, invalidate]);
   return null;
 }
 
@@ -436,8 +485,6 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     const id = window.setTimeout(() => setFirstFrameDrawn(true), 1200);
     return () => window.clearTimeout(id);
   }, [isEnter]);
-
-  const showCover = isExit || (isEnter && !firstFrameDrawn);
 
   const storageKey = persistLastFrameKey
     ? `FeelingImageMorphGL:${persistLastFrameKey}`
@@ -535,22 +582,21 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
   // Option B: delay Canvas mount until after the viewport exists and a frame has painted
   const [showCanvas, setShowCanvas] = useState(false);
   useLayoutEffect(() => {
-    let raf1 = 0 as number | ReturnType<typeof requestAnimationFrame>;
-    let raf2 = 0 as number | ReturnType<typeof requestAnimationFrame>;
-    const rAF = typeof requestAnimationFrame === 'function'
-      ? requestAnimationFrame
-      : ((cb: FrameRequestCallback) => window.setTimeout(() => cb(performance.now()), 16));
-    const cAF = typeof cancelAnimationFrame === 'function'
-      ? cancelAnimationFrame
-      : ((id: number) => window.clearTimeout(id));
+    let raf1 = 0 as number;
+    const rAF =
+      typeof requestAnimationFrame === 'function'
+        ? requestAnimationFrame
+        : (cb: FrameRequestCallback) =>
+            window.setTimeout(() => cb(performance.now()), 16);
+    const cAF =
+      typeof cancelAnimationFrame === 'function'
+        ? cancelAnimationFrame
+        : (id: number) => window.clearTimeout(id);
 
-    raf1 = rAF(() => {
-      raf2 = rAF(() => setShowCanvas(true));
-    });
+    raf1 = rAF(() => setShowCanvas(true));
 
     return () => {
-      if (raf1) cAF(raf1 as number);
-      if (raf2) cAF(raf2 as number);
+      if (raf1) cAF(raf1);
     };
   }, []);
 
@@ -573,7 +619,10 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
 
   // Track whether the viewport has a non-zero size to allow <View> registration
   const [viewportHasSize, setViewportHasSize] = useState(false);
-  const [viewportDims, setViewportDims] = useState<{w: number; h: number}>({ w: 0, h: 0 });
+  const [viewportDims, setViewportDims] = useState<{ w: number; h: number }>({
+    w: 0,
+    h: 0,
+  });
   useEffect(() => {
     const el = viewportRef.current;
     if (!el) {
@@ -596,12 +645,13 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
 
   const canUseShared = Boolean(
     useSharedCanvas &&
-    sharedReady &&
-    viewportHasSize &&
-    viewportRef.current &&
-    !fallbackLocal,
+      sharedReady &&
+      viewportHasSize &&
+      viewportRef.current &&
+      !fallbackLocal,
   );
-  const viewKey = canUseShared ? `${viewportDims.w}x${viewportDims.h}` : undefined;
+  // No key on <View>; resizing shouldn't remount the scene
+  // const viewKey = canUseShared ? `${viewportDims.w}x${viewportDims.h}` : undefined;
 
   const [isInteracting, setIsInteracting] = useState(false);
 
@@ -790,10 +840,20 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
     if (keys.includes(e.key)) startSnap();
   };
 
+  const isAnimatingView =
+    isInteracting ||
+    btnRaf.current != null ||
+    snapRaf.current != null ||
+    (isEnter && !firstFrameDrawn);
+
+  const showDomCover =
+    (!canUseShared || fallbackLocal) &&
+    (isExit || (isEnter && !firstFrameDrawn));
+
   return (
     <Flex gap="md" style={wrapperStyle} className={className}>
       <div ref={viewportRef} style={viewportStyle}>
-        {showCover && (
+        {showDomCover && (
           <img
             src={images[currentIndexForLabel]}
             alt=""
@@ -808,36 +868,27 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
               borderRadius: 12,
               pointerEvents: 'none',
               zIndex: 2,
+              opacity: isExit ? 1 : firstFrameDrawn ? 0 : 1,
+              transition: 'opacity 140ms ease-out',
             }}
           />
         )}
-        {!isExit && showCanvas && (
-          canUseShared ? (
-            <View key={viewKey} track={viewportRef as any}>
-              <Suspense
-                fallback={
-                  <Html fullscreen>
-                    <img
-                      src={images[currentIndexForLabel]}
-                      alt=""
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        objectPosition: 'center',
-                        borderRadius: 12,
-                        pointerEvents: 'none',
-                      }}
-                    />
-                  </Html>
-                }
-              >
+        {showCanvas &&
+          (canUseShared ? (
+            <View
+              track={viewportRef as any}
+              frames={
+                isAnimatingView || isExit || (isEnter && !firstFrameDrawn)
+                  ? Infinity
+                  : 1
+              }
+            >
+              <Suspense fallback={null}>
                 {/* Hide the entering DOM cover once the shared Canvas has rendered a frame */}
                 {isEnter && (
                   <FirstFrame onFirstFrame={() => setFirstFrameDrawn(true)} />
                 )}
+                <InvalidateOnSize w={viewportDims.w} h={viewportDims.h} />
                 <GLContent
                   images={images}
                   displacementUrl={displacementUrl}
@@ -846,23 +897,32 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
                   fTarget={f}
                   intensity={intensity}
                   disableDamping={disableDamping}
+                  bgColor={bgColor}
                 />
               </Suspense>
             </View>
           ) : (
             <Canvas
               // Provide explicit event target to prevent null parent during animated mounts
-              eventSource={viewportRef as unknown as React.RefObject<HTMLElement>}
+              eventSource={
+                viewportRef as unknown as React.RefObject<HTMLElement>
+              }
               eventPrefix="client"
-              dpr={1}
-              gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+              dpr={[1, 1.5]}
+              frameloop="demand"
+              gl={{
+                alpha: true,
+                antialias: false,
+                powerPreference: 'high-performance',
+              }}
               onCreated={(state) => {
                 const { gl } = state;
                 gl.outputColorSpace = THREE.SRGBColorSpace;
                 gl.toneMapping = THREE.NoToneMapping;
                 gl.setClearColor(0x000000, 0);
                 // Defensive: ensure events are connected to the viewport after creation
-                const target = viewportRef.current as unknown as HTMLElement | null;
+                const target =
+                  viewportRef.current as unknown as HTMLElement | null;
                 const anyState = state as any;
                 try {
                   if (target && anyState?.events) {
@@ -872,26 +932,7 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
                 } catch {}
               }}
             >
-              <Suspense
-                fallback={
-                  <Html fullscreen>
-                    <img
-                      src={images[currentIndexForLabel]}
-                      alt=""
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        objectPosition: 'center',
-                        borderRadius: 12,
-                        pointerEvents: 'none',
-                      }}
-                    />
-                  </Html>
-                }
-              >
+              <Suspense fallback={null}>
                 {/* Hide the entering DOM cover once the Canvas has rendered a frame */}
                 {isEnter && (
                   <FirstFrame onFirstFrame={() => setFirstFrameDrawn(true)} />
@@ -904,11 +945,11 @@ export const FeelingImageMorphGL: React.FC<FeelingImageMorphGLProps> = ({
                   fTarget={f}
                   intensity={intensity}
                   disableDamping={disableDamping}
+                  bgColor={bgColor}
                 />
               </Suspense>
             </Canvas>
-          )
-        )}
+          ))}
         {/*<div style={labelBadge} aria-hidden="true">*/}
         {/*  {labelText}*/}
         {/*</div>*/}
